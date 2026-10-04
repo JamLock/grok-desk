@@ -1,0 +1,1951 @@
+{
+  "snapshot": true,
+  "not_live": true,
+  "captured_pt": "2026-09-09 23:29:30 PDT",
+  "disclaimer": "SNAPSHOT \u2014 not live. Not financial advice. No profit guarantee. This page does not place orders.",
+  "state": {
+    "disclaimer": "Polymarket BTC Up/Down Trader. LIVE trading when gated (--live or LIVE_POLYMARKET=1 + CONFIRM_LIVE + private key); otherwise DRY-RUN (real books, simulated fills). Not financial advice. Real money can be lost.",
+    "mode": "DRY-RUN",
+    "live_data": true,
+    "live_polymarket": false,
+    "paper": true,
+    "slug": "btc-updown-5m-1789021500",
+    "mid_up": 0.99,
+    "mid_down": 0.01,
+    "fair_up": 0.3035,
+    "edge_up": null,
+    "edge_down": 0.4958,
+    "last_reason": "no_edge",
+    "book_source": "live",
+    "question": "Bitcoin Up or Down - September 10, 2:25AM-2:30AM ET",
+    "bankroll": 9952.56,
+    "starting_bankroll": 10000.0,
+    "realized_pnl": -9.885,
+    "equity": 9952.56,
+    "windows_traded": 2,
+    "windows_won": 0,
+    "windows_lost": 1,
+    "fills": 9,
+    "pairs_locked_total": 50.0,
+    "halted": false,
+    "halt_reason": "",
+    "daily_pnl": 0.0,
+    "last_price": 78208.17,
+    "last_tick_ms": 1789021770294,
+    "last_tick_pt": "2026-09-09 23:29:30 PDT",
+    "window": {
+      "start_ms": 1789021500000,
+      "end_ms": 1789021800000,
+      "open_btc": 78215.43,
+      "last_btc": 78208.17,
+      "settled": false,
+      "winner": "",
+      "spent_usdc": 37.555,
+      "tick_count": 4,
+      "slug": "btc-updown-5m-1789021500",
+      "settle_source": ""
+    },
+    "inventory": {
+      "up_qty": 25.0,
+      "down_qty": 75.0,
+      "up_cost": 15.98625,
+      "down_cost": 21.56875,
+      "paired": 25.0,
+      "directional": -50.0,
+      "pair_locked_pnl": 1.824167,
+      "avg_up": 0.63945,
+      "avg_down": 0.287583,
+      "matched_quantity": 25.0,
+      "directional_exposure": -50.0,
+      "pair_avg_cost": 0.927033
+    },
+    "analysis": {
+      "ts_ms": 1791012036780,
+      "ts_pt": "2026-10-03 00:20:36 PDT",
+      "slug": "btc-updown-5m-1791012000",
+      "action": "ROTATE",
+      "opportunity_score": 62.8,
+      "reasons": [
+        "model favors UP but inventory is heavy DOWN (exposure=-50.0) \u2014 stop adding the heavy side; optional reduce, then a small block on UP",
+        "temporal pair: hold DOWN, add UP in blocks of 5 (other-leg edge=+0.0229)",
+        "hedged directional: keep a modest UP imbalance (target |exposure|\u227215, now -50.0); matched=25.0. Edge=+0.0229",
+        "correlated_btc_5_and_15: 5m and 15m gaps share a sign \u2014 treat as one BTC exposure, not two independent bets",
+        "15m gap +0.265 vs 5m gap +0.050 \u2014 15m lags its own fair (WATCH only; this card does not trade 15m)",
+        "next 5m gap (fair-mid)=-0.005 rel=-0.0055 \u2014 read-only",
+        "underweight UP; executable edge=+0.0229 clears pair threshold",
+        "rotate toward up: stop adding down; optional reduce; then \u22645 on the model side",
+        "inventory penalty q*\u03bb*\u03c3\u00b2*\u03c4=-3.455e-07 (quote adjustment=-0.25; working_quote_up=0.7446)",
+        "fractional Kelly allocation hint=1.22% of capital (hint only \u2014 hard caps still bind; not a profit forecast)",
+        "opportunity=63 (mis=59 depth=100 inv=44 time=55 regime=50)",
+        "structures DYNAMIC_ROTATION=80 TEMPORAL_ARB=63 HEDGED_DIRECTIONAL=66 MULTI_MARKET=64 NEAR_RESOLUTION=0",
+        "decision support only \u2014 no profit guarantee"
+      ],
+      "risk_flags": [
+        "correlated_btc_5_and_15"
+      ],
+      "fair_up": 0.4946,
+      "fair_down": 0.5054,
+      "mid_up": 0.445,
+      "mid_down": 0.575,
+      "mispricing_up_vs_mid": 0.0496,
+      "mispricing_down_vs_mid": -0.0696,
+      "exec_avg_up": 0.45,
+      "exec_avg_down": 0.58,
+      "mispricing_up_vs_exec": 0.0446,
+      "mispricing_down_vs_exec": -0.0746,
+      "edge_up": 0.0229,
+      "edge_down": -0.0983,
+      "book_imbalance": -0.7616,
+      "depth_score": 100.0,
+      "best_ask_up": 0.45,
+      "best_ask_down": 0.58,
+      "ask_depth_up": 1828.17,
+      "ask_depth_down": 305.0,
+      "paired_ratio": 0.25,
+      "directional_risk": 0.625,
+      "pair_cost_vs_1": -0.073,
+      "inventory_health": 44.4,
+      "up_qty": 25.0,
+      "down_qty": 75.0,
+      "paired": 25.0,
+      "directional": -50.0,
+      "time_remaining_sec": 263.2,
+      "time_pressure": 12.3,
+      "vol_regime": "low",
+      "momentum_regime": "flat",
+      "realized_vol": 0.00015,
+      "momentum": 0.4933,
+      "z_score": -0.1828,
+      "score_mispricing": 59.2,
+      "score_depth": 100.0,
+      "score_inventory": 44.4,
+      "score_time": 55.0,
+      "score_regime": 50.0,
+      "book_source": "live",
+      "btc": 84598.59,
+      "open_btc": 84603.45,
+      "structure": "DYNAMIC_ROTATION",
+      "structure_scores": {
+        "DYNAMIC_ROTATION": 80.0,
+        "TEMPORAL_ARB": 63.0,
+        "HEDGED_DIRECTIONAL": 65.7,
+        "MULTI_MARKET": 64.0,
+        "NEAR_RESOLUTION": 0.0
+      },
+      "rotate_to": "up",
+      "suggested_qty": 5.0,
+      "suggested_block": null,
+      "inventory_penalty": -3.454762e-07,
+      "quote_adjustment": -0.25,
+      "working_quote_up": 0.7446,
+      "trade_edge_up": 0.0229,
+      "trade_edge_down": -0.0983,
+      "kelly_allocation": 0.0122,
+      "odds_revised_up": 0.4943,
+      "signal_multiplier": 0.9933,
+      "pair_avg_cost": 0.927,
+      "matched_quantity": 25.0,
+      "directional_exposure": -50.0,
+      "related_markets": [
+        {
+          "label": "btc_5m",
+          "slug": "btc-updown-5m-1791012000",
+          "ok": true,
+          "mid_up": 0.445,
+          "fair_up": 0.4946,
+          "gap": 0.0496,
+          "relative_score": 0.0496,
+          "error": null,
+          "window_seconds": 300,
+          "time_remaining_sec": 263.2
+        },
+        {
+          "label": "btc_5m_next",
+          "slug": "btc-updown-5m-1791012300",
+          "ok": true,
+          "mid_up": 0.505,
+          "fair_up": 0.4995,
+          "gap": -0.0055,
+          "relative_score": -0.0055,
+          "error": null,
+          "window_seconds": 300,
+          "time_remaining_sec": 564.0
+        },
+        {
+          "label": "btc_15m",
+          "slug": "btc-updown-15m-1791011700",
+          "ok": true,
+          "mid_up": 0.315,
+          "fair_up": 0.5803,
+          "gap": 0.2653,
+          "relative_score": 0.2653,
+          "error": null,
+          "window_seconds": 900,
+          "time_remaining_sec": 564.0
+        }
+      ],
+      "near_expiry_warning": null,
+      "not_financial_advice": true,
+      "no_profit_guarantee": true,
+      "disclaimer": "Decision support only. Not financial advice. No profit guarantee. Past signals do not predict future outcomes. Caps/gates for live trading unchanged."
+    },
+    "intel": {
+      "ts_ms": 1791012038909,
+      "ts_pt": "2026-10-03 00:20:38 PDT",
+      "grade": "C",
+      "win_rate": 0.0,
+      "windows_won": 0,
+      "windows_lost": 1,
+      "windows_settled": 2,
+      "avg_edge_taken": 0.1355,
+      "fill_count": 9,
+      "fill_quality": 100.0,
+      "pair_lock_rate": 0.4,
+      "pairs_locked_total": 50.0,
+      "daily_pnl": 0.0,
+      "realized_pnl": -9.885,
+      "max_drawdown": -9.885,
+      "current_drawdown": -9.885,
+      "avg_settle_pnl": -4.9425,
+      "live_fills": 0,
+      "paper_fills": 9,
+      "analysis_actions": {},
+      "notes": [
+        "insufficient settled windows for a strong grade (need \u22653)",
+        "grade is descriptive of recent journal history, not a forecast"
+      ],
+      "not_financial_advice": true,
+      "no_profit_guarantee": true,
+      "disclaimer": "Strategy scorecard from local journal \u2014 decision support only. Not financial advice. No profit guarantee. Grade is descriptive, not predictive."
+    },
+    "not_financial_advice": true,
+    "no_profit_guarantee": true,
+    "_resume": {
+      "start_ms": 1789021500000,
+      "end_ms": 1789021800000,
+      "open_btc": 78215.43,
+      "last_btc": 78208.17,
+      "spent_usdc": 37.555,
+      "tick_count": 4,
+      "slug": "btc-updown-5m-1789021500",
+      "inv": {
+        "up_qty": 25.0,
+        "down_qty": 75.0,
+        "up_cost": 15.98625,
+        "down_cost": 21.56875,
+        "paired": 25.0,
+        "directional": -50.0,
+        "pair_locked_pnl": 1.824167,
+        "avg_up": 0.63945,
+        "avg_down": 0.287583,
+        "matched_quantity": 25.0,
+        "directional_exposure": -50.0,
+        "pair_avg_cost": 0.927033
+      }
+    },
+    "risk": {
+      "daily_pnl": 0.0,
+      "daily_date_utc": "2026-09-10",
+      "halted": false,
+      "halt_reason": "",
+      "data_failures": 0
+    },
+    "meta": {
+      "mode": "DRY-RUN",
+      "live_data": true,
+      "slug": "btc-updown-5m-1789021500",
+      "question": "Bitcoin Up or Down - September 10, 2:25AM-2:30AM ET",
+      "mid_up": 0.99,
+      "mid_down": 0.01,
+      "book_source": "live",
+      "up_token_id": "65460093432643207726261586419343855344258161720885090563456020090152172659935",
+      "down_token_id": "100535498692335241339736957195700321132274410685111573645121683685649570706113",
+      "fair_up": 0.3035,
+      "edge_up": null,
+      "edge_down": 0.4958,
+      "last_reason": "no_edge",
+      "live_armed": false,
+      "analysis": {
+        "ts_ms": 1791012036780,
+        "ts_pt": "2026-10-03 00:20:36 PDT",
+        "slug": "btc-updown-5m-1791012000",
+        "action": "ROTATE",
+        "opportunity_score": 62.8,
+        "reasons": [
+          "model favors UP but inventory is heavy DOWN (exposure=-50.0) \u2014 stop adding the heavy side; optional reduce, then a small block on UP",
+          "temporal pair: hold DOWN, add UP in blocks of 5 (other-leg edge=+0.0229)",
+          "hedged directional: keep a modest UP imbalance (target |exposure|\u227215, now -50.0); matched=25.0. Edge=+0.0229",
+          "correlated_btc_5_and_15: 5m and 15m gaps share a sign \u2014 treat as one BTC exposure, not two independent bets",
+          "15m gap +0.265 vs 5m gap +0.050 \u2014 15m lags its own fair (WATCH only; this card does not trade 15m)",
+          "next 5m gap (fair-mid)=-0.005 rel=-0.0055 \u2014 read-only",
+          "underweight UP; executable edge=+0.0229 clears pair threshold",
+          "rotate toward up: stop adding down; optional reduce; then \u22645 on the model side",
+          "inventory penalty q*\u03bb*\u03c3\u00b2*\u03c4=-3.455e-07 (quote adjustment=-0.25; working_quote_up=0.7446)",
+          "fractional Kelly allocation hint=1.22% of capital (hint only \u2014 hard caps still bind; not a profit forecast)",
+          "opportunity=63 (mis=59 depth=100 inv=44 time=55 regime=50)",
+          "structures DYNAMIC_ROTATION=80 TEMPORAL_ARB=63 HEDGED_DIRECTIONAL=66 MULTI_MARKET=64 NEAR_RESOLUTION=0",
+          "decision support only \u2014 no profit guarantee"
+        ],
+        "risk_flags": [
+          "correlated_btc_5_and_15"
+        ],
+        "fair_up": 0.4946,
+        "fair_down": 0.5054,
+        "mid_up": 0.445,
+        "mid_down": 0.575,
+        "mispricing_up_vs_mid": 0.0496,
+        "mispricing_down_vs_mid": -0.0696,
+        "exec_avg_up": 0.45,
+        "exec_avg_down": 0.58,
+        "mispricing_up_vs_exec": 0.0446,
+        "mispricing_down_vs_exec": -0.0746,
+        "edge_up": 0.0229,
+        "edge_down": -0.0983,
+        "book_imbalance": -0.7616,
+        "depth_score": 100.0,
+        "best_ask_up": 0.45,
+        "best_ask_down": 0.58,
+        "ask_depth_up": 1828.17,
+        "ask_depth_down": 305.0,
+        "paired_ratio": 0.25,
+        "directional_risk": 0.625,
+        "pair_cost_vs_1": -0.073,
+        "inventory_health": 44.4,
+        "up_qty": 25.0,
+        "down_qty": 75.0,
+        "paired": 25.0,
+        "directional": -50.0,
+        "time_remaining_sec": 263.2,
+        "time_pressure": 12.3,
+        "vol_regime": "low",
+        "momentum_regime": "flat",
+        "realized_vol": 0.00015,
+        "momentum": 0.4933,
+        "z_score": -0.1828,
+        "score_mispricing": 59.2,
+        "score_depth": 100.0,
+        "score_inventory": 44.4,
+        "score_time": 55.0,
+        "score_regime": 50.0,
+        "book_source": "live",
+        "btc": 84598.59,
+        "open_btc": 84603.45,
+        "structure": "DYNAMIC_ROTATION",
+        "structure_scores": {
+          "DYNAMIC_ROTATION": 80.0,
+          "TEMPORAL_ARB": 63.0,
+          "HEDGED_DIRECTIONAL": 65.7,
+          "MULTI_MARKET": 64.0,
+          "NEAR_RESOLUTION": 0.0
+        },
+        "rotate_to": "up",
+        "suggested_qty": 5.0,
+        "suggested_block": null,
+        "inventory_penalty": -3.454762e-07,
+        "quote_adjustment": -0.25,
+        "working_quote_up": 0.7446,
+        "trade_edge_up": 0.0229,
+        "trade_edge_down": -0.0983,
+        "kelly_allocation": 0.0122,
+        "odds_revised_up": 0.4943,
+        "signal_multiplier": 0.9933,
+        "pair_avg_cost": 0.927,
+        "matched_quantity": 25.0,
+        "directional_exposure": -50.0,
+        "related_markets": [
+          {
+            "label": "btc_5m",
+            "slug": "btc-updown-5m-1791012000",
+            "ok": true,
+            "mid_up": 0.445,
+            "fair_up": 0.4946,
+            "gap": 0.0496,
+            "relative_score": 0.0496,
+            "error": null,
+            "window_seconds": 300,
+            "time_remaining_sec": 263.2
+          },
+          {
+            "label": "btc_5m_next",
+            "slug": "btc-updown-5m-1791012300",
+            "ok": true,
+            "mid_up": 0.505,
+            "fair_up": 0.4995,
+            "gap": -0.0055,
+            "relative_score": -0.0055,
+            "error": null,
+            "window_seconds": 300,
+            "time_remaining_sec": 564.0
+          },
+          {
+            "label": "btc_15m",
+            "slug": "btc-updown-15m-1791011700",
+            "ok": true,
+            "mid_up": 0.315,
+            "fair_up": 0.5803,
+            "gap": 0.2653,
+            "relative_score": 0.2653,
+            "error": null,
+            "window_seconds": 900,
+            "time_remaining_sec": 564.0
+          }
+        ],
+        "near_expiry_warning": null,
+        "not_financial_advice": true,
+        "no_profit_guarantee": true,
+        "disclaimer": "Decision support only. Not financial advice. No profit guarantee. Past signals do not predict future outcomes. Caps/gates for live trading unchanged."
+      },
+      "intel": {
+        "ts_ms": 1791012038909,
+        "ts_pt": "2026-10-03 00:20:38 PDT",
+        "grade": "C",
+        "win_rate": 0.0,
+        "windows_won": 0,
+        "windows_lost": 1,
+        "windows_settled": 2,
+        "avg_edge_taken": 0.1355,
+        "fill_count": 9,
+        "fill_quality": 100.0,
+        "pair_lock_rate": 0.4,
+        "pairs_locked_total": 50.0,
+        "daily_pnl": 0.0,
+        "realized_pnl": -9.885,
+        "max_drawdown": -9.885,
+        "current_drawdown": -9.885,
+        "avg_settle_pnl": -4.9425,
+        "live_fills": 0,
+        "paper_fills": 9,
+        "analysis_actions": {},
+        "notes": [
+          "insufficient settled windows for a strong grade (need \u22653)",
+          "grade is descriptive of recent journal history, not a forecast"
+        ],
+        "not_financial_advice": true,
+        "no_profit_guarantee": true,
+        "disclaimer": "Strategy scorecard from local journal \u2014 decision support only. Not financial advice. No profit guarantee. Grade is descriptive, not predictive."
+      }
+    }
+  },
+  "journal": {
+    "events": [
+      {
+        "ts_ms": 1788714903243,
+        "ts_pt": "2026-09-06 10:15:03 PDT",
+        "event": "SESSION",
+        "reason": "paper-session-start",
+        "bankroll": 10000.0,
+        "once": true,
+        "live_polymarket": false
+      },
+      {
+        "ts_ms": 1788714903243,
+        "ts_pt": "2026-09-06 10:15:03 PDT",
+        "event": "TICK",
+        "reason": "no_edge",
+        "fair_up": 0.5032,
+        "fair_down": 0.4968,
+        "remaining_sec": 296.8,
+        "inventory": {
+          "up_qty": 0.0,
+          "down_qty": 0.0,
+          "up_cost": 0.0,
+          "down_cost": 0.0,
+          "paired": 0.0,
+          "directional": 0.0,
+          "pair_locked_pnl": 0.0,
+          "avg_up": 0.0,
+          "avg_down": 0.0
+        },
+        "n_fills": 0
+      },
+      {
+        "ts_ms": 1788848752687,
+        "ts_pt": "2026-09-07 23:25:52 PDT",
+        "event": "SESSION",
+        "reason": "live-paper-session-start",
+        "bankroll": 10000.0,
+        "once": true,
+        "live_polymarket": false,
+        "live_data": true,
+        "mode": "live-paper"
+      },
+      {
+        "ts_ms": 1788848752687,
+        "ts_pt": "2026-09-07 23:25:52 PDT",
+        "event": "MARKET_RESOLVED",
+        "reason": "gamma_slug",
+        "slug": "btc-updown-5m-1788848700",
+        "window_ts": 1788848700,
+        "up_token_id": "74654280019583025537648430152924995353219302221384618797319654603835870192911",
+        "down_token_id": "55176807237095601753661916985746885638241522363666387178032786369375471355492",
+        "question": "Bitcoin Up or Down - September 8, 2:25AM-2:30AM ET",
+        "outcome_prices": [
+          0.505,
+          0.495
+        ],
+        "closed": false
+      },
+      {
+        "ts_ms": 1788715200000,
+        "ts_pt": "2026-09-06 10:20:00 PDT",
+        "event": "SETTLE",
+        "reason": "winner=up via=polymarket",
+        "window_start_ms": 1788714900000,
+        "slug": "btc-updown-5m-1788714900",
+        "open_btc": 79626.0,
+        "final_btc": 79626.0,
+        "winner": "up",
+        "settle_source": "polymarket",
+        "pnl": 0.0,
+        "payoff": 0.0,
+        "inventory": {
+          "up_qty": 0.0,
+          "down_qty": 0.0,
+          "up_cost": 0.0,
+          "down_cost": 0.0,
+          "paired": 0.0,
+          "directional": 0.0,
+          "pair_locked_pnl": 0.0,
+          "avg_up": 0.0,
+          "avg_down": 0.0
+        },
+        "bankroll": 10000.0
+      },
+      {
+        "ts_ms": 1788848752687,
+        "ts_pt": "2026-09-07 23:25:52 PDT",
+        "event": "BOOK",
+        "reason": "clob_live",
+        "slug": "btc-updown-5m-1788848700",
+        "up": {
+          "mid": 0.315,
+          "best_ask": 0.32,
+          "best_bid": 0.31,
+          "asks": [
+            {
+              "price": 0.32,
+              "size": 251.24
+            },
+            {
+              "price": 0.33,
+              "size": 240.0
+            },
+            {
+              "price": 0.34,
+              "size": 117.55
+            }
+          ],
+          "bids": [
+            {
+              "price": 0.31,
+              "size": 145.92
+            },
+            {
+              "price": 0.3,
+              "size": 332.01
+            },
+            {
+              "price": 0.29,
+              "size": 194.58
+            }
+          ],
+          "n_asks": 68,
+          "n_bids": 31
+        },
+        "down": {
+          "mid": 0.685,
+          "best_ask": 0.69,
+          "best_bid": 0.68,
+          "asks": [
+            {
+              "price": 0.69,
+              "size": 382.33
+            },
+            {
+              "price": 0.7,
+              "size": 229.46
+            },
+            {
+              "price": 0.71,
+              "size": 312.58
+            }
+          ],
+          "bids": [
+            {
+              "price": 0.68,
+              "size": 185.0
+            },
+            {
+              "price": 0.67,
+              "size": 245.0
+            },
+            {
+              "price": 0.66,
+              "size": 123.0
+            }
+          ],
+          "n_asks": 31,
+          "n_bids": 68
+        },
+        "book_source": "live"
+      },
+      {
+        "ts_ms": 1788848752687,
+        "ts_pt": "2026-09-07 23:25:52 PDT",
+        "event": "FILL",
+        "reason": "paper:directional_edge",
+        "side": "up",
+        "qty": 25.0,
+        "avg_fill": 0.32,
+        "fee": 0.12,
+        "cost": 8.12,
+        "fair_working": 0.4741,
+        "edge_ps": 0.1343,
+        "paper": true,
+        "book_source": "live",
+        "slug": "btc-updown-5m-1788848700",
+        "inventory": {
+          "up_qty": 25.0,
+          "down_qty": 0.0,
+          "up_cost": 8.12,
+          "down_cost": 0.0,
+          "paired": 0.0,
+          "directional": 25.0,
+          "pair_locked_pnl": 0.0,
+          "avg_up": 0.3248,
+          "avg_down": 0.0
+        },
+        "bankroll": 9991.88
+      },
+      {
+        "ts_ms": 1788848752687,
+        "ts_pt": "2026-09-07 23:25:52 PDT",
+        "event": "SIGNAL",
+        "reason": "directional_edge",
+        "slug": "btc-updown-5m-1788848700",
+        "fair_up": 0.4741,
+        "fair_down": 0.5259,
+        "mid_up": 0.315,
+        "mid_down": 0.685,
+        "edge_up": 0.1343,
+        "edge_down": -0.1895,
+        "remaining_sec": 247.3,
+        "inventory": {
+          "up_qty": 25.0,
+          "down_qty": 0.0,
+          "up_cost": 8.12,
+          "down_cost": 0.0,
+          "paired": 0.0,
+          "directional": 25.0,
+          "pair_locked_pnl": 0.0,
+          "avg_up": 0.3248,
+          "avg_down": 0.0
+        },
+        "n_fills": 1,
+        "book_source": "live"
+      },
+      {
+        "ts_ms": 1788848752687,
+        "ts_pt": "2026-09-07 23:25:52 PDT",
+        "event": "TICK",
+        "reason": "directional_edge",
+        "slug": "btc-updown-5m-1788848700",
+        "fair_up": 0.4741,
+        "fair_down": 0.5259,
+        "remaining_sec": 247.3,
+        "inventory": {
+          "up_qty": 25.0,
+          "down_qty": 0.0,
+          "up_cost": 8.12,
+          "down_cost": 0.0,
+          "paired": 0.0,
+          "directional": 25.0,
+          "pair_locked_pnl": 0.0,
+          "avg_up": 0.3248,
+          "avg_down": 0.0
+        },
+        "n_fills": 1,
+        "book_source": "live"
+      },
+      {
+        "ts_ms": 1788848759999,
+        "ts_pt": "2026-09-07 23:25:59 PDT",
+        "event": "SESSION",
+        "reason": "live-paper-session-start",
+        "bankroll": 9991.88,
+        "once": true,
+        "live_polymarket": false,
+        "live_data": true,
+        "mode": "live-paper"
+      },
+      {
+        "ts_ms": 1788848760000,
+        "ts_pt": "2026-09-07 23:26:00 PDT",
+        "event": "MARKET_RESOLVED",
+        "reason": "gamma_slug",
+        "slug": "btc-updown-5m-1788848700",
+        "window_ts": 1788848700,
+        "up_token_id": "74654280019583025537648430152924995353219302221384618797319654603835870192911",
+        "down_token_id": "55176807237095601753661916985746885638241522363666387178032786369375471355492",
+        "question": "Bitcoin Up or Down - September 8, 2:25AM-2:30AM ET",
+        "outcome_prices": [
+          0.505,
+          0.495
+        ],
+        "closed": false
+      },
+      {
+        "ts_ms": 1788848760000,
+        "ts_pt": "2026-09-07 23:26:00 PDT",
+        "event": "BOOK",
+        "reason": "clob_live",
+        "slug": "btc-updown-5m-1788848700",
+        "up": {
+          "mid": 0.375,
+          "best_ask": 0.38,
+          "best_bid": 0.37,
+          "asks": [
+            {
+              "price": 0.38,
+              "size": 98.18
+            },
+            {
+              "price": 0.39,
+              "size": 183.0
+            },
+            {
+              "price": 0.4,
+              "size": 238.74
+            }
+          ],
+          "bids": [
+            {
+              "price": 0.37,
+              "size": 685.14
+            },
+            {
+              "price": 0.36,
+              "size": 383.0
+            },
+            {
+              "price": 0.35,
+              "size": 498.0
+            }
+          ],
+          "n_asks": 62,
+          "n_bids": 37
+        },
+        "down": {
+          "mid": 0.625,
+          "best_ask": 0.63,
+          "best_bid": 0.62,
+          "asks": [
+            {
+              "price": 0.63,
+              "size": 693.14
+            },
+            {
+              "price": 0.64,
+              "size": 383.0
+            },
+            {
+              "price": 0.65,
+              "size": 498.0
+            }
+          ],
+          "bids": [
+            {
+              "price": 0.62,
+              "size": 90.18
+            },
+            {
+              "price": 0.61,
+              "size": 178.0
+            },
+            {
+              "price": 0.6,
+              "size": 238.74
+            }
+          ],
+          "n_asks": 37,
+          "n_bids": 62
+        },
+        "book_source": "live"
+      },
+      {
+        "ts_ms": 1788848760000,
+        "ts_pt": "2026-09-07 23:26:00 PDT",
+        "event": "FILL",
+        "reason": "paper:pair_second_leg",
+        "side": "down",
+        "qty": 25.0,
+        "avg_fill": 0.63,
+        "fee": 0.2362,
+        "cost": 15.9863,
+        "fair_working": 0.7763,
+        "edge_ps": 0.1218,
+        "paper": true,
+        "book_source": "live",
+        "slug": "btc-updown-5m-1788848700",
+        "inventory": {
+          "up_qty": 25.0,
+          "down_qty": 25.0,
+          "up_cost": 8.12,
+          "down_cost": 15.98625,
+          "paired": 25.0,
+          "directional": 0.0,
+          "pair_locked_pnl": 0.89375,
+          "avg_up": 0.3248,
+          "avg_down": 0.63945
+        },
+        "bankroll": 9975.8937
+      },
+      {
+        "ts_ms": 1788848760000,
+        "ts_pt": "2026-09-07 23:26:00 PDT",
+        "event": "FILL",
+        "reason": "paper:directional_edge",
+        "side": "up",
+        "qty": 25.0,
+        "avg_fill": 0.38,
+        "fee": 0.1425,
+        "cost": 9.6425,
+        "fair_working": 0.4737,
+        "edge_ps": 0.073,
+        "paper": true,
+        "book_source": "live",
+        "slug": "btc-updown-5m-1788848700",
+        "inventory": {
+          "up_qty": 50.0,
+          "down_qty": 25.0,
+          "up_cost": 17.7625,
+          "down_cost": 15.98625,
+          "paired": 25.0,
+          "directional": 25.0,
+          "pair_locked_pnl": 0.1325,
+          "avg_up": 0.35525,
+          "avg_down": 0.63945
+        },
+        "bankroll": 9966.2512
+      },
+      {
+        "ts_ms": 1788848760000,
+        "ts_pt": "2026-09-07 23:26:00 PDT",
+        "event": "SIGNAL",
+        "reason": "directional_edge",
+        "slug": "btc-updown-5m-1788848700",
+        "fair_up": 0.4737,
+        "fair_down": 0.5263,
+        "mid_up": 0.375,
+        "mid_down": 0.625,
+        "edge_up": 0.073,
+        "edge_down": -0.1282,
+        "remaining_sec": 240.0,
+        "inventory": {
+          "up_qty": 50.0,
+          "down_qty": 25.0,
+          "up_cost": 17.7625,
+          "down_cost": 15.98625,
+          "paired": 25.0,
+          "directional": 25.0,
+          "pair_locked_pnl": 0.1325,
+          "avg_up": 0.35525,
+          "avg_down": 0.63945
+        },
+        "n_fills": 2,
+        "book_source": "live"
+      },
+      {
+        "ts_ms": 1788848760000,
+        "ts_pt": "2026-09-07 23:26:00 PDT",
+        "event": "TICK",
+        "reason": "directional_edge",
+        "slug": "btc-updown-5m-1788848700",
+        "fair_up": 0.4737,
+        "fair_down": 0.5263,
+        "remaining_sec": 240.0,
+        "inventory": {
+          "up_qty": 50.0,
+          "down_qty": 25.0,
+          "up_cost": 17.7625,
+          "down_cost": 15.98625,
+          "paired": 25.0,
+          "directional": 25.0,
+          "pair_locked_pnl": 0.1325,
+          "avg_up": 0.35525,
+          "avg_down": 0.63945
+        },
+        "n_fills": 2,
+        "book_source": "live"
+      },
+      {
+        "ts_ms": 1788848761516,
+        "ts_pt": "2026-09-07 23:26:01 PDT",
+        "event": "SESSION",
+        "reason": "sim-book-session-start",
+        "bankroll": 9966.2512,
+        "once": true,
+        "live_polymarket": false,
+        "live_data": false,
+        "mode": "sim-book"
+      },
+      {
+        "ts_ms": 1788848761516,
+        "ts_pt": "2026-09-07 23:26:01 PDT",
+        "event": "MARKET_RESOLVED",
+        "reason": "sim_book_window",
+        "slug": "btc-updown-5m-1788848700",
+        "window_ts": 1788848700
+      },
+      {
+        "ts_ms": 1788848761516,
+        "ts_pt": "2026-09-07 23:26:01 PDT",
+        "event": "FILL",
+        "reason": "paper:pair_second_leg",
+        "side": "down",
+        "qty": 25.0,
+        "avg_fill": 0.62,
+        "fee": 0.2325,
+        "cost": 15.7325,
+        "fair_working": 0.777,
+        "edge_ps": 0.1327,
+        "paper": true,
+        "book_source": "synthetic",
+        "slug": "btc-updown-5m-1788848700",
+        "inventory": {
+          "up_qty": 50.0,
+          "down_qty": 50.0,
+          "up_cost": 17.7625,
+          "down_cost": 31.71875,
+          "paired": 50.0,
+          "directional": 0.0,
+          "pair_locked_pnl": 0.51875,
+          "avg_up": 0.35525,
+          "avg_down": 0.634375
+        },
+        "bankroll": 9950.5187
+      },
+      {
+        "ts_ms": 1788848761516,
+        "ts_pt": "2026-09-07 23:26:01 PDT",
+        "event": "FILL",
+        "reason": "paper:directional_edge",
+        "side": "up",
+        "qty": 25.0,
+        "avg_fill": 0.41,
+        "fee": 0.1537,
+        "cost": 10.4038,
+        "fair_working": 0.473,
+        "edge_ps": 0.0418,
+        "paper": true,
+        "book_source": "synthetic",
+        "slug": "btc-updown-5m-1788848700",
+        "inventory": {
+          "up_qty": 75.0,
+          "down_qty": 50.0,
+          "up_cost": 28.16625,
+          "down_cost": 31.71875,
+          "paired": 50.0,
+          "directional": 25.0,
+          "pair_locked_pnl": -0.49625,
+          "avg_up": 0.37555,
+          "avg_down": 0.634375
+        },
+        "bankroll": 9940.115
+      },
+      {
+        "ts_ms": 1788848761516,
+        "ts_pt": "2026-09-07 23:26:01 PDT",
+        "event": "SIGNAL",
+        "reason": "directional_edge",
+        "slug": "btc-updown-5m-1788848700",
+        "fair_up": 0.473,
+        "fair_down": 0.527,
+        "mid_up": 0.3975,
+        "mid_down": 0.6111,
+        "edge_up": 0.0418,
+        "edge_down": -0.1173,
+        "remaining_sec": 238.5,
+        "inventory": {
+          "up_qty": 75.0,
+          "down_qty": 50.0,
+          "up_cost": 28.16625,
+          "down_cost": 31.71875,
+          "paired": 50.0,
+          "directional": 25.0,
+          "pair_locked_pnl": -0.49625,
+          "avg_up": 0.37555,
+          "avg_down": 0.634375
+        },
+        "n_fills": 2,
+        "book_source": "synthetic"
+      },
+      {
+        "ts_ms": 1788848761516,
+        "ts_pt": "2026-09-07 23:26:01 PDT",
+        "event": "TICK",
+        "reason": "directional_edge",
+        "slug": "btc-updown-5m-1788848700",
+        "fair_up": 0.473,
+        "fair_down": 0.527,
+        "remaining_sec": 238.5,
+        "inventory": {
+          "up_qty": 75.0,
+          "down_qty": 50.0,
+          "up_cost": 28.16625,
+          "down_cost": 31.71875,
+          "paired": 50.0,
+          "directional": 25.0,
+          "pair_locked_pnl": -0.49625,
+          "avg_up": 0.37555,
+          "avg_down": 0.634375
+        },
+        "n_fills": 2,
+        "book_source": "synthetic"
+      },
+      {
+        "ts_ms": 1789021510809,
+        "ts_pt": "2026-09-09 23:25:10 PDT",
+        "event": "SESSION",
+        "reason": "live-paper-session-start",
+        "bankroll": 9940.115,
+        "once": true,
+        "live_polymarket": false,
+        "live_data": true,
+        "mode": "live-paper",
+        "gate_msg": "paper"
+      },
+      {
+        "ts_ms": 1789021510809,
+        "ts_pt": "2026-09-09 23:25:10 PDT",
+        "event": "MARKET_RESOLVED",
+        "reason": "gamma_slug",
+        "slug": "btc-updown-5m-1789021500",
+        "window_ts": 1789021500,
+        "up_token_id": "65460093432643207726261586419343855344258161720885090563456020090152172659935",
+        "down_token_id": "100535498692335241339736957195700321132274410685111573645121683685649570706113",
+        "question": "Bitcoin Up or Down - September 10, 2:25AM-2:30AM ET",
+        "outcome_prices": [
+          0.505,
+          0.495
+        ],
+        "closed": false
+      },
+      {
+        "ts_ms": 1788849000000,
+        "ts_pt": "2026-09-07 23:30:00 PDT",
+        "event": "SETTLE",
+        "reason": "winner=down via=polymarket",
+        "window_start_ms": 1788848700000,
+        "slug": "btc-updown-5m-1788848700",
+        "open_btc": 78446.0,
+        "final_btc": 78411.33,
+        "winner": "down",
+        "settle_source": "polymarket",
+        "pnl": -9.885,
+        "payoff": 50.0,
+        "inventory": {
+          "up_qty": 75.0,
+          "down_qty": 50.0,
+          "up_cost": 28.16625,
+          "down_cost": 31.71875,
+          "paired": 50.0,
+          "directional": 25.0,
+          "pair_locked_pnl": -0.49625,
+          "avg_up": 0.37555,
+          "avg_down": 0.634375
+        },
+        "bankroll": 9990.115,
+        "live": false
+      },
+      {
+        "ts_ms": 1789021510809,
+        "ts_pt": "2026-09-09 23:25:10 PDT",
+        "event": "BOOK",
+        "reason": "clob_live",
+        "slug": "btc-updown-5m-1789021500",
+        "up": {
+          "mid": 0.575,
+          "best_ask": 0.58,
+          "best_bid": 0.57,
+          "asks": [
+            {
+              "price": 0.58,
+              "size": 118.75
+            },
+            {
+              "price": 0.59,
+              "size": 165.0
+            },
+            {
+              "price": 0.6,
+              "size": 294.0
+            }
+          ],
+          "bids": [
+            {
+              "price": 0.57,
+              "size": 399.45
+            },
+            {
+              "price": 0.56,
+              "size": 231.81
+            },
+            {
+              "price": 0.55,
+              "size": 232.98
+            }
+          ],
+          "n_asks": 42,
+          "n_bids": 57
+        },
+        "down": {
+          "mid": 0.425,
+          "best_ask": 0.43,
+          "best_bid": 0.42,
+          "asks": [
+            {
+              "price": 0.43,
+              "size": 387.82
+            },
+            {
+              "price": 0.44,
+              "size": 231.81
+            },
+            {
+              "price": 0.45,
+              "size": 232.98
+            }
+          ],
+          "bids": [
+            {
+              "price": 0.42,
+              "size": 118.75
+            },
+            {
+              "price": 0.41,
+              "size": 165.0
+            },
+            {
+              "price": 0.4,
+              "size": 289.0
+            }
+          ],
+          "n_asks": 57,
+          "n_bids": 42
+        },
+        "book_source": "live"
+      },
+      {
+        "ts_ms": 1789021510809,
+        "ts_pt": "2026-09-09 23:25:10 PDT",
+        "event": "FILL",
+        "reason": "paper:directional_edge",
+        "side": "down",
+        "qty": 25.0,
+        "avg_fill": 0.43,
+        "fee": 0.1613,
+        "cost": 10.9113,
+        "fair_working": 0.503,
+        "edge_ps": 0.0516,
+        "paper": true,
+        "live": false,
+        "book_source": "live",
+        "slug": "btc-updown-5m-1789021500",
+        "inventory": {
+          "up_qty": 0.0,
+          "down_qty": 25.0,
+          "up_cost": 0.0,
+          "down_cost": 10.91125,
+          "paired": 0.0,
+          "directional": -25.0,
+          "pair_locked_pnl": 0.0,
+          "avg_up": 0.0,
+          "avg_down": 0.43645
+        },
+        "bankroll": 9979.2038
+      },
+      {
+        "ts_ms": 1789021510809,
+        "ts_pt": "2026-09-09 23:25:10 PDT",
+        "event": "SIGNAL",
+        "reason": "directional_edge",
+        "slug": "btc-updown-5m-1789021500",
+        "fair_up": 0.497,
+        "fair_down": 0.503,
+        "mid_up": 0.575,
+        "mid_down": 0.425,
+        "edge_up": -0.1067,
+        "edge_down": 0.0516,
+        "remaining_sec": 289.2,
+        "inventory": {
+          "up_qty": 0.0,
+          "down_qty": 25.0,
+          "up_cost": 0.0,
+          "down_cost": 10.91125,
+          "paired": 0.0,
+          "directional": -25.0,
+          "pair_locked_pnl": 0.0,
+          "avg_up": 0.0,
+          "avg_down": 0.43645
+        },
+        "n_fills": 1,
+        "book_source": "live",
+        "live": false
+      },
+      {
+        "ts_ms": 1789021510809,
+        "ts_pt": "2026-09-09 23:25:10 PDT",
+        "event": "TICK",
+        "reason": "directional_edge",
+        "slug": "btc-updown-5m-1789021500",
+        "fair_up": 0.497,
+        "fair_down": 0.503,
+        "remaining_sec": 289.2,
+        "inventory": {
+          "up_qty": 0.0,
+          "down_qty": 25.0,
+          "up_cost": 0.0,
+          "down_cost": 10.91125,
+          "paired": 0.0,
+          "directional": -25.0,
+          "pair_locked_pnl": 0.0,
+          "avg_up": 0.0,
+          "avg_down": 0.43645
+        },
+        "n_fills": 1,
+        "book_source": "live",
+        "live": false
+      },
+      {
+        "ts_ms": 1789021516837,
+        "ts_pt": "2026-09-09 23:25:16 PDT",
+        "event": "SESSION",
+        "reason": "live-paper-session-start",
+        "bankroll": 9979.2038,
+        "once": true,
+        "live_polymarket": false,
+        "live_data": true,
+        "mode": "live-paper",
+        "gate_msg": "CONFIRM_LIVE missing or incorrect (must exactly equal I_UNDERSTAND_THIS_IS_REAL_MONEY)"
+      },
+      {
+        "ts_ms": 1789021516837,
+        "ts_pt": "2026-09-09 23:25:16 PDT",
+        "event": "MARKET_RESOLVED",
+        "reason": "gamma_slug",
+        "slug": "btc-updown-5m-1789021500",
+        "window_ts": 1789021500,
+        "up_token_id": "65460093432643207726261586419343855344258161720885090563456020090152172659935",
+        "down_token_id": "100535498692335241339736957195700321132274410685111573645121683685649570706113",
+        "question": "Bitcoin Up or Down - September 10, 2:25AM-2:30AM ET",
+        "outcome_prices": [
+          0.505,
+          0.495
+        ],
+        "closed": false
+      },
+      {
+        "ts_ms": 1789021516837,
+        "ts_pt": "2026-09-09 23:25:16 PDT",
+        "event": "BOOK",
+        "reason": "clob_live",
+        "slug": "btc-updown-5m-1789021500",
+        "up": {
+          "mid": 0.625,
+          "best_ask": 0.63,
+          "best_bid": 0.62,
+          "asks": [
+            {
+              "price": 0.63,
+              "size": 105.0
+            },
+            {
+              "price": 0.64,
+              "size": 276.0
+            },
+            {
+              "price": 0.65,
+              "size": 486.0
+            }
+          ],
+          "bids": [
+            {
+              "price": 0.62,
+              "size": 369.45
+            },
+            {
+              "price": 0.61,
+              "size": 437.3
+            },
+            {
+              "price": 0.6,
+              "size": 147.12
+            }
+          ],
+          "n_asks": 37,
+          "n_bids": 62
+        },
+        "down": {
+          "mid": 0.375,
+          "best_ask": 0.38,
+          "best_bid": 0.37,
+          "asks": [
+            {
+              "price": 0.38,
+              "size": 379.45
+            },
+            {
+              "price": 0.39,
+              "size": 452.3
+            },
+            {
+              "price": 0.4,
+              "size": 162.12
+            }
+          ],
+          "bids": [
+            {
+              "price": 0.37,
+              "size": 105.0
+            },
+            {
+              "price": 0.36,
+              "size": 276.0
+            },
+            {
+              "price": 0.35,
+              "size": 486.0
+            }
+          ],
+          "n_asks": 62,
+          "n_bids": 37
+        },
+        "book_source": "live"
+      },
+      {
+        "ts_ms": 1789021516837,
+        "ts_pt": "2026-09-09 23:25:16 PDT",
+        "event": "FILL",
+        "reason": "paper:pair_second_leg",
+        "side": "up",
+        "qty": 25.0,
+        "avg_fill": 0.63,
+        "fee": 0.2362,
+        "cost": 15.9863,
+        "fair_working": 0.7464,
+        "edge_ps": 0.0919,
+        "paper": true,
+        "live": false,
+        "book_source": "live",
+        "slug": "btc-updown-5m-1789021500",
+        "inventory": {
+          "up_qty": 25.0,
+          "down_qty": 25.0,
+          "up_cost": 15.98625,
+          "down_cost": 10.91125,
+          "paired": 25.0,
+          "directional": 0.0,
+          "pair_locked_pnl": -1.8975,
+          "avg_up": 0.63945,
+          "avg_down": 0.43645
+        },
+        "bankroll": 9963.2175
+      },
+      {
+        "ts_ms": 1789021516837,
+        "ts_pt": "2026-09-09 23:25:16 PDT",
+        "event": "FILL",
+        "reason": "paper:directional_edge",
+        "side": "down",
+        "qty": 25.0,
+        "avg_fill": 0.38,
+        "fee": 0.1425,
+        "cost": 9.6425,
+        "fair_working": 0.5036,
+        "edge_ps": 0.1029,
+        "paper": true,
+        "live": false,
+        "book_source": "live",
+        "slug": "btc-updown-5m-1789021500",
+        "inventory": {
+          "up_qty": 25.0,
+          "down_qty": 50.0,
+          "up_cost": 15.98625,
+          "down_cost": 20.55375,
+          "paired": 25.0,
+          "directional": -25.0,
+          "pair_locked_pnl": -1.263125,
+          "avg_up": 0.63945,
+          "avg_down": 0.411075
+        },
+        "bankroll": 9953.575
+      },
+      {
+        "ts_ms": 1789021516837,
+        "ts_pt": "2026-09-09 23:25:16 PDT",
+        "event": "SIGNAL",
+        "reason": "directional_edge",
+        "slug": "btc-updown-5m-1789021500",
+        "fair_up": 0.4964,
+        "fair_down": 0.5036,
+        "mid_up": 0.625,
+        "mid_down": 0.375,
+        "edge_up": -0.1581,
+        "edge_down": 0.1029,
+        "remaining_sec": 283.2,
+        "inventory": {
+          "up_qty": 25.0,
+          "down_qty": 50.0,
+          "up_cost": 15.98625,
+          "down_cost": 20.55375,
+          "paired": 25.0,
+          "directional": -25.0,
+          "pair_locked_pnl": -1.263125,
+          "avg_up": 0.63945,
+          "avg_down": 0.411075
+        },
+        "n_fills": 2,
+        "book_source": "live",
+        "live": false
+      },
+      {
+        "ts_ms": 1789021516837,
+        "ts_pt": "2026-09-09 23:25:16 PDT",
+        "event": "TICK",
+        "reason": "directional_edge",
+        "slug": "btc-updown-5m-1789021500",
+        "fair_up": 0.4964,
+        "fair_down": 0.5036,
+        "remaining_sec": 283.2,
+        "inventory": {
+          "up_qty": 25.0,
+          "down_qty": 50.0,
+          "up_cost": 15.98625,
+          "down_cost": 20.55375,
+          "paired": 25.0,
+          "directional": -25.0,
+          "pair_locked_pnl": -1.263125,
+          "avg_up": 0.63945,
+          "avg_down": 0.411075
+        },
+        "n_fills": 2,
+        "book_source": "live",
+        "live": false
+      },
+      {
+        "ts_ms": 1789021755345,
+        "ts_pt": "2026-09-09 23:29:15 PDT",
+        "event": "SESSION",
+        "reason": "dry-run-session-start",
+        "bankroll": 9953.575,
+        "once": true,
+        "live_polymarket": false,
+        "live_data": true,
+        "mode": "DRY-RUN",
+        "gate_msg": "CONFIRM_LIVE missing or incorrect (must exactly equal I_UNDERSTAND_THIS_IS_REAL_MONEY)"
+      },
+      {
+        "ts_ms": 1789021755346,
+        "ts_pt": "2026-09-09 23:29:15 PDT",
+        "event": "MARKET_RESOLVED",
+        "reason": "gamma_slug",
+        "slug": "btc-updown-5m-1789021500",
+        "window_ts": 1789021500,
+        "up_token_id": "65460093432643207726261586419343855344258161720885090563456020090152172659935",
+        "down_token_id": "100535498692335241339736957195700321132274410685111573645121683685649570706113",
+        "question": "Bitcoin Up or Down - September 10, 2:25AM-2:30AM ET",
+        "outcome_prices": [
+          0.505,
+          0.495
+        ],
+        "closed": false
+      },
+      {
+        "ts_ms": 1789021755346,
+        "ts_pt": "2026-09-09 23:29:15 PDT",
+        "event": "BOOK",
+        "reason": "clob_live",
+        "slug": "btc-updown-5m-1789021500",
+        "up": {
+          "mid": 0.965,
+          "best_ask": 0.97,
+          "best_bid": 0.96,
+          "asks": [
+            {
+              "price": 0.97,
+              "size": 438.21
+            },
+            {
+              "price": 0.98,
+              "size": 1241.5
+            },
+            {
+              "price": 0.99,
+              "size": 4909.99
+            }
+          ],
+          "bids": [
+            {
+              "price": 0.96,
+              "size": 194.0
+            },
+            {
+              "price": 0.95,
+              "size": 186.44
+            },
+            {
+              "price": 0.94,
+              "size": 45.0
+            }
+          ],
+          "n_asks": 3,
+          "n_bids": 96
+        },
+        "down": {
+          "mid": 0.035,
+          "best_ask": 0.04,
+          "best_bid": 0.03,
+          "asks": [
+            {
+              "price": 0.04,
+              "size": 194.0
+            },
+            {
+              "price": 0.05,
+              "size": 186.44
+            },
+            {
+              "price": 0.06,
+              "size": 45.0
+            }
+          ],
+          "bids": [
+            {
+              "price": 0.03,
+              "size": 417.9
+            },
+            {
+              "price": 0.02,
+              "size": 1241.5
+            },
+            {
+              "price": 0.01,
+              "size": 4909.99
+            }
+          ],
+          "n_asks": 96,
+          "n_bids": 3
+        },
+        "book_source": "live"
+      },
+      {
+        "ts_ms": 1789021755346,
+        "ts_pt": "2026-09-09 23:29:15 PDT",
+        "event": "FILL",
+        "reason": "paper:directional_edge",
+        "side": "down",
+        "qty": 25.0,
+        "avg_fill": 0.04,
+        "fee": 0.015,
+        "cost": 1.015,
+        "fair_working": 0.5253,
+        "edge_ps": 0.4697,
+        "paper": true,
+        "live": false,
+        "book_source": "live",
+        "slug": "btc-updown-5m-1789021500",
+        "inventory": {
+          "up_qty": 25.0,
+          "down_qty": 75.0,
+          "up_cost": 15.98625,
+          "down_cost": 21.56875,
+          "paired": 25.0,
+          "directional": -50.0,
+          "pair_locked_pnl": 1.824167,
+          "avg_up": 0.63945,
+          "avg_down": 0.287583
+        },
+        "bankroll": 9952.56
+      },
+      {
+        "ts_ms": 1789021755346,
+        "ts_pt": "2026-09-09 23:29:15 PDT",
+        "event": "SIGNAL",
+        "reason": "directional_edge",
+        "slug": "btc-updown-5m-1789021500",
+        "fair_up": 0.3428,
+        "fair_down": 0.6572,
+        "mid_up": 0.965,
+        "mid_down": 0.035,
+        "edge_up": -0.5248,
+        "edge_down": 0.4697,
+        "remaining_sec": 44.7,
+        "inventory": {
+          "up_qty": 25.0,
+          "down_qty": 75.0,
+          "up_cost": 15.98625,
+          "down_cost": 21.56875,
+          "paired": 25.0,
+          "directional": -50.0,
+          "pair_locked_pnl": 1.824167,
+          "avg_up": 0.63945,
+          "avg_down": 0.287583
+        },
+        "n_fills": 1,
+        "book_source": "live",
+        "live": false
+      },
+      {
+        "ts_ms": 1789021755346,
+        "ts_pt": "2026-09-09 23:29:15 PDT",
+        "event": "TICK",
+        "reason": "directional_edge",
+        "slug": "btc-updown-5m-1789021500",
+        "fair_up": 0.3428,
+        "fair_down": 0.6572,
+        "remaining_sec": 44.7,
+        "inventory": {
+          "up_qty": 25.0,
+          "down_qty": 75.0,
+          "up_cost": 15.98625,
+          "down_cost": 21.56875,
+          "paired": 25.0,
+          "directional": -50.0,
+          "pair_locked_pnl": 1.824167,
+          "avg_up": 0.63945,
+          "avg_down": 0.287583
+        },
+        "n_fills": 1,
+        "book_source": "live",
+        "live": false
+      },
+      {
+        "ts_ms": 1789021770293,
+        "ts_pt": "2026-09-09 23:29:30 PDT",
+        "event": "SESSION",
+        "reason": "dry-run-session-start",
+        "bankroll": 9952.56,
+        "once": true,
+        "live_polymarket": false,
+        "live_data": true,
+        "mode": "DRY-RUN",
+        "gate_msg": "dry-run"
+      },
+      {
+        "ts_ms": 1789021770294,
+        "ts_pt": "2026-09-09 23:29:30 PDT",
+        "event": "MARKET_RESOLVED",
+        "reason": "gamma_slug",
+        "slug": "btc-updown-5m-1789021500",
+        "window_ts": 1789021500,
+        "up_token_id": "65460093432643207726261586419343855344258161720885090563456020090152172659935",
+        "down_token_id": "100535498692335241339736957195700321132274410685111573645121683685649570706113",
+        "question": "Bitcoin Up or Down - September 10, 2:25AM-2:30AM ET",
+        "outcome_prices": [
+          0.975,
+          0.025
+        ],
+        "closed": false
+      },
+      {
+        "ts_ms": 1789021770294,
+        "ts_pt": "2026-09-09 23:29:30 PDT",
+        "event": "BOOK",
+        "reason": "clob_live",
+        "slug": "btc-updown-5m-1789021500",
+        "up": {
+          "mid": 0.99,
+          "best_ask": null,
+          "best_bid": 0.99,
+          "asks": [],
+          "bids": [
+            {
+              "price": 0.99,
+              "size": 10470.42
+            },
+            {
+              "price": 0.98,
+              "size": 230.39
+            },
+            {
+              "price": 0.97,
+              "size": 206.96
+            }
+          ],
+          "n_asks": 0,
+          "n_bids": 99
+        },
+        "down": {
+          "mid": 0.01,
+          "best_ask": 0.01,
+          "best_bid": null,
+          "asks": [
+            {
+              "price": 0.01,
+              "size": 10452.5
+            },
+            {
+              "price": 0.02,
+              "size": 245.39
+            },
+            {
+              "price": 0.03,
+              "size": 221.96
+            }
+          ],
+          "bids": [],
+          "n_asks": 99,
+          "n_bids": 0
+        },
+        "book_source": "live"
+      },
+      {
+        "ts_ms": 1789021770294,
+        "ts_pt": "2026-09-09 23:29:30 PDT",
+        "event": "SIGNAL",
+        "reason": "no_edge",
+        "slug": "btc-updown-5m-1789021500",
+        "fair_up": 0.3035,
+        "fair_down": 0.6965,
+        "mid_up": 0.99,
+        "mid_down": 0.01,
+        "edge_up": null,
+        "edge_down": 0.4958,
+        "remaining_sec": 29.7,
+        "inventory": {
+          "up_qty": 25.0,
+          "down_qty": 75.0,
+          "up_cost": 15.98625,
+          "down_cost": 21.56875,
+          "paired": 25.0,
+          "directional": -50.0,
+          "pair_locked_pnl": 1.824167,
+          "avg_up": 0.63945,
+          "avg_down": 0.287583
+        },
+        "n_fills": 0,
+        "book_source": "live",
+        "live": false
+      },
+      {
+        "ts_ms": 1789021770294,
+        "ts_pt": "2026-09-09 23:29:30 PDT",
+        "event": "TICK",
+        "reason": "no_edge",
+        "slug": "btc-updown-5m-1789021500",
+        "fair_up": 0.3035,
+        "fair_down": 0.6965,
+        "remaining_sec": 29.7,
+        "inventory": {
+          "up_qty": 25.0,
+          "down_qty": 75.0,
+          "up_cost": 15.98625,
+          "down_cost": 21.56875,
+          "paired": 25.0,
+          "directional": -50.0,
+          "pair_locked_pnl": 1.824167,
+          "avg_up": 0.63945,
+          "avg_down": 0.287583
+        },
+        "n_fills": 0,
+        "book_source": "live",
+        "live": false
+      }
+    ],
+    "disclaimer": "SNAPSHOT \u2014 not live. Not financial advice. No profit guarantee. This page does not place orders."
+  },
+  "analysis": {
+    "analysis": {
+      "ts_ms": 1791012036780,
+      "ts_pt": "2026-10-03 00:20:36 PDT",
+      "slug": "btc-updown-5m-1791012000",
+      "action": "ROTATE",
+      "opportunity_score": 62.8,
+      "reasons": [
+        "model favors UP but inventory is heavy DOWN (exposure=-50.0) \u2014 stop adding the heavy side; optional reduce, then a small block on UP",
+        "temporal pair: hold DOWN, add UP in blocks of 5 (other-leg edge=+0.0229)",
+        "hedged directional: keep a modest UP imbalance (target |exposure|\u227215, now -50.0); matched=25.0. Edge=+0.0229",
+        "correlated_btc_5_and_15: 5m and 15m gaps share a sign \u2014 treat as one BTC exposure, not two independent bets",
+        "15m gap +0.265 vs 5m gap +0.050 \u2014 15m lags its own fair (WATCH only; this card does not trade 15m)",
+        "next 5m gap (fair-mid)=-0.005 rel=-0.0055 \u2014 read-only",
+        "underweight UP; executable edge=+0.0229 clears pair threshold",
+        "rotate toward up: stop adding down; optional reduce; then \u22645 on the model side",
+        "inventory penalty q*\u03bb*\u03c3\u00b2*\u03c4=-3.455e-07 (quote adjustment=-0.25; working_quote_up=0.7446)",
+        "fractional Kelly allocation hint=1.22% of capital (hint only \u2014 hard caps still bind; not a profit forecast)",
+        "opportunity=63 (mis=59 depth=100 inv=44 time=55 regime=50)",
+        "structures DYNAMIC_ROTATION=80 TEMPORAL_ARB=63 HEDGED_DIRECTIONAL=66 MULTI_MARKET=64 NEAR_RESOLUTION=0",
+        "decision support only \u2014 no profit guarantee"
+      ],
+      "risk_flags": [
+        "correlated_btc_5_and_15"
+      ],
+      "fair_up": 0.4946,
+      "fair_down": 0.5054,
+      "mid_up": 0.445,
+      "mid_down": 0.575,
+      "mispricing_up_vs_mid": 0.0496,
+      "mispricing_down_vs_mid": -0.0696,
+      "exec_avg_up": 0.45,
+      "exec_avg_down": 0.58,
+      "mispricing_up_vs_exec": 0.0446,
+      "mispricing_down_vs_exec": -0.0746,
+      "edge_up": 0.0229,
+      "edge_down": -0.0983,
+      "book_imbalance": -0.7616,
+      "depth_score": 100.0,
+      "best_ask_up": 0.45,
+      "best_ask_down": 0.58,
+      "ask_depth_up": 1828.17,
+      "ask_depth_down": 305.0,
+      "paired_ratio": 0.25,
+      "directional_risk": 0.625,
+      "pair_cost_vs_1": -0.073,
+      "inventory_health": 44.4,
+      "up_qty": 25.0,
+      "down_qty": 75.0,
+      "paired": 25.0,
+      "directional": -50.0,
+      "time_remaining_sec": 263.2,
+      "time_pressure": 12.3,
+      "vol_regime": "low",
+      "momentum_regime": "flat",
+      "realized_vol": 0.00015,
+      "momentum": 0.4933,
+      "z_score": -0.1828,
+      "score_mispricing": 59.2,
+      "score_depth": 100.0,
+      "score_inventory": 44.4,
+      "score_time": 55.0,
+      "score_regime": 50.0,
+      "book_source": "live",
+      "btc": 84598.59,
+      "open_btc": 84603.45,
+      "structure": "DYNAMIC_ROTATION",
+      "structure_scores": {
+        "DYNAMIC_ROTATION": 80.0,
+        "TEMPORAL_ARB": 63.0,
+        "HEDGED_DIRECTIONAL": 65.7,
+        "MULTI_MARKET": 64.0,
+        "NEAR_RESOLUTION": 0.0
+      },
+      "rotate_to": "up",
+      "suggested_qty": 5.0,
+      "suggested_block": null,
+      "inventory_penalty": -3.454762e-07,
+      "quote_adjustment": -0.25,
+      "working_quote_up": 0.7446,
+      "trade_edge_up": 0.0229,
+      "trade_edge_down": -0.0983,
+      "kelly_allocation": 0.0122,
+      "odds_revised_up": 0.4943,
+      "signal_multiplier": 0.9933,
+      "pair_avg_cost": 0.927,
+      "matched_quantity": 25.0,
+      "directional_exposure": -50.0,
+      "related_markets": [
+        {
+          "label": "btc_5m",
+          "slug": "btc-updown-5m-1791012000",
+          "ok": true,
+          "mid_up": 0.445,
+          "fair_up": 0.4946,
+          "gap": 0.0496,
+          "relative_score": 0.0496,
+          "error": null,
+          "window_seconds": 300,
+          "time_remaining_sec": 263.2
+        },
+        {
+          "label": "btc_5m_next",
+          "slug": "btc-updown-5m-1791012300",
+          "ok": true,
+          "mid_up": 0.505,
+          "fair_up": 0.4995,
+          "gap": -0.0055,
+          "relative_score": -0.0055,
+          "error": null,
+          "window_seconds": 300,
+          "time_remaining_sec": 564.0
+        },
+        {
+          "label": "btc_15m",
+          "slug": "btc-updown-15m-1791011700",
+          "ok": true,
+          "mid_up": 0.315,
+          "fair_up": 0.5803,
+          "gap": 0.2653,
+          "relative_score": 0.2653,
+          "error": null,
+          "window_seconds": 900,
+          "time_remaining_sec": 564.0
+        }
+      ],
+      "near_expiry_warning": null,
+      "not_financial_advice": true,
+      "no_profit_guarantee": true,
+      "disclaimer": "Decision support only. Not financial advice. No profit guarantee. Past signals do not predict future outcomes. Caps/gates for live trading unchanged."
+    },
+    "intel": {
+      "ts_ms": 1791012038909,
+      "ts_pt": "2026-10-03 00:20:38 PDT",
+      "grade": "C",
+      "win_rate": 0.0,
+      "windows_won": 0,
+      "windows_lost": 1,
+      "windows_settled": 2,
+      "avg_edge_taken": 0.1355,
+      "fill_count": 9,
+      "fill_quality": 100.0,
+      "pair_lock_rate": 0.4,
+      "pairs_locked_total": 50.0,
+      "daily_pnl": 0.0,
+      "realized_pnl": -9.885,
+      "max_drawdown": -9.885,
+      "current_drawdown": -9.885,
+      "avg_settle_pnl": -4.9425,
+      "live_fills": 0,
+      "paper_fills": 9,
+      "analysis_actions": {},
+      "notes": [
+        "insufficient settled windows for a strong grade (need \u22653)",
+        "grade is descriptive of recent journal history, not a forecast"
+      ],
+      "not_financial_advice": true,
+      "no_profit_guarantee": true,
+      "disclaimer": "Strategy scorecard from local journal \u2014 decision support only. Not financial advice. No profit guarantee. Grade is descriptive, not predictive."
+    },
+    "not_financial_advice": true,
+    "no_profit_guarantee": true,
+    "disclaimer": "Decision support only. Not financial advice. No profit guarantee. Past signals do not predict future outcomes. Caps/gates for live trading unchanged."
+  },
+  "intel": {
+    "ts_ms": 1791012038909,
+    "ts_pt": "2026-10-03 00:20:38 PDT",
+    "grade": "C",
+    "win_rate": 0.0,
+    "windows_won": 0,
+    "windows_lost": 1,
+    "windows_settled": 2,
+    "avg_edge_taken": 0.1355,
+    "fill_count": 9,
+    "fill_quality": 100.0,
+    "pair_lock_rate": 0.4,
+    "pairs_locked_total": 50.0,
+    "daily_pnl": 0.0,
+    "realized_pnl": -9.885,
+    "max_drawdown": -9.885,
+    "current_drawdown": -9.885,
+    "avg_settle_pnl": -4.9425,
+    "live_fills": 0,
+    "paper_fills": 9,
+    "analysis_actions": {},
+    "notes": [
+      "insufficient settled windows for a strong grade (need \u22653)",
+      "grade is descriptive of recent journal history, not a forecast"
+    ],
+    "not_financial_advice": true,
+    "no_profit_guarantee": true,
+    "disclaimer": "Strategy scorecard from local journal \u2014 decision support only. Not financial advice. No profit guarantee. Grade is descriptive, not predictive."
+  }
+}
