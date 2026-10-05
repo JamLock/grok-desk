@@ -180,6 +180,7 @@
   <div class="tape" id="tape"></div>
 </section>
 <p class="disclaimer" id="disclaimerFoot">Not financial advice · No profit guarantee</p>
+<script src="public-live.js"></script>
 <script>
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -327,6 +328,9 @@ function lineSvg(series) {
     '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="1.6"/>' + short + '</svg>';
 }
 function btcSeries(jr, st, a) {
+  if (st && Array.isArray(st.public_candles) && st.public_candles.length) {
+    return { candles: st.public_candles, last: num(st.last_price), source: 'binance' };
+  }
   const candles = [];
   (jr.events || []).forEach(function (e) {
     const o = num(e.open_btc);
@@ -434,11 +438,18 @@ function candleSvg(pack) {
   const sep = '<line x1="' + padL + '" y1="' + baseY + '" x2="' + (w - padR) + '" y2="' + baseY + '" stroke="#e6eaee"/>' +
     '<text x="' + (w - padR) + '" y="' + (baseY + 11) + '" text-anchor="end" fill="#8b949e" font-size="9">RANGE · not volume</text>';
   const dropped = all.length - shown.length;
-  let note = shown.length + ' journal print' + (shown.length === 1 ? '' : 's');
-  if (dropped > 0) note += ' · latest ' + SLOTS + ' of ' + all.length;
-  if (shown.length < 8) note += ' · fewer than 8 prints · remaining columns are an empty grid, not invented candles';
-  note += ' · bodies are open→close only, no high/low';
-  note += ' · range bars are |close−open|, not exchange volume';
+  let note;
+  if (pack.source === 'binance') {
+    note = shown.length + ' Binance 5m candles';
+    if (dropped > 0) note += ' · latest ' + SLOTS + ' of ' + all.length;
+    note += ' · bodies are open→close · range bars are |close−open|, not exchange volume';
+  } else {
+    note = shown.length + ' journal print' + (shown.length === 1 ? '' : 's');
+    if (dropped > 0) note += ' · latest ' + SLOTS + ' of ' + all.length;
+    if (shown.length < 8) note += ' · fewer than 8 prints · remaining columns are an empty grid, not invented candles';
+    note += ' · bodies are open→close only, no high/low';
+    note += ' · range bars are |close−open|, not exchange volume';
+  }
   if (noteBits.length) note += ' · ' + noteBits.join(' · ');
   return { note: note, svg:
     '<svg class="chart" viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="BTC prints">' +
@@ -454,8 +465,8 @@ function levelsOf(side) {
   };
 }
 function ladderHtml(jr, a) {
-  let book = null;
-  (jr.events || []).forEach(function (e) { if (e && e.event === 'BOOK' && e.up) book = e; });
+  let book = (a && a.public_book && a.public_book.up) ? a.public_book : null;
+  if (!book) (jr.events || []).forEach(function (e) { if (e && e.event === 'BOOK' && e.up) book = e; });
   if (!book) {
     const upD = num(a.ask_depth_up), dnD = num(a.ask_depth_down);
     const max = Math.max(upD || 0, dnD || 0, 1);
@@ -493,7 +504,7 @@ function ladderHtml(jr, a) {
   const nu = book.up && book.up.n_bids != null ? book.up.n_bids : '';
   const na = book.up && book.up.n_asks != null ? book.up.n_asks : '';
   return '<div class="ladder">' + block('UP', book.up) + block('DOWN', book.down) + '</div>' +
-    '<div class="booknote">journal book ' + esc(book.ts_pt || '') + ' · stored levels only (UP book reported ' + esc(nu) + ' bids / ' + esc(na) +
+    '<div class="booknote">' + ((a && a.public_book) ? 'public CLOB book ' : 'journal book ') + esc(book.ts_pt || '') + ' · stored levels only (UP book reported ' + esc(nu) + ' bids / ' + esc(na) +
     ' asks) · blank rungs are empty tracks, not prices · now mid ' + esc(fmt(a.mid_up)) + ' / ' + esc(fmt(a.mid_down)) + '</div>';
 }
 function detailOf(e) {
@@ -672,15 +683,16 @@ function paint(st, jr, an, intel) {
   if (d2) d2.textContent = disc;
   const src = document.getElementById('srcBadge');
   if (src) src.textContent = sourceLabel ? ('source: ' + sourceLabel) : '';
-  const armed = !!(st.live_armed || st.live_polymarket || String(st.mode || '').toUpperCase() === 'LIVE');
+  const modeName = String(st.mode || '').toUpperCase();
+  const pub = modeName === 'LIVE_PUBLIC' || modeName === 'LIVE PUBLIC';
+  const armed = !pub && !!(st.live_armed || st.live_polymarket || modeName === 'LIVE');
   const badge = document.getElementById('modeBadge');
   if (badge) {
-    const modeName = String(st.mode || '').toUpperCase();
     const stand = modeName === 'STANDALONE';
     const snapMode = modeName === 'SNAPSHOT';
     badge.className = 'pill ' + (armed ? 'live' : 'dry');
-    badge.textContent = armed ? 'LIVE' : (snapMode ? 'SNAPSHOT' : (stand ? 'STANDALONE' : 'DRY-RUN'));
-    badge.title = armed ? 'mode=LIVE · REAL MONEY ARMED' : (snapMode ? 'SNAPSHOT · NOT LIVE · NO ORDERS' : 'mode=DRY-RUN · REAL ORDERS OFF');
+    badge.textContent = pub ? 'LIVE PUBLIC' : (armed ? 'LIVE' : (snapMode ? 'SNAPSHOT' : (stand ? 'STANDALONE' : 'DRY-RUN')));
+    badge.title = pub ? 'LIVE PUBLIC · read-only · no orders' : (armed ? 'mode=LIVE · REAL MONEY ARMED' : (snapMode ? 'SNAPSHOT · NOT LIVE · NO ORDERS' : 'mode=DRY-RUN · REAL ORDERS OFF'));
   }
   const pnl = num(st.realized_pnl);
   const day = num(sc.daily_pnl != null ? sc.daily_pnl : st.daily_pnl);
@@ -721,7 +733,7 @@ function paint(st, jr, an, intel) {
     return '<div class="sbar"><span class="sl lbl">' + esc(label) + '</span><span class="track"><i class="' + color + '" style="width:' + pct.toFixed(1) + '%"></i></span><span class="sv">' + esc(text) + '</span></div>';
   }
   document.getElementById('swarm').innerHTML =
-    '<div class="ph"><span class="pt">Swarm PnL</span><span class="ps">realized · not a forecast</span></div>' +
+    '<div class="ph"><span class="pt">Swarm PnL</span><span class="ps">' + (pub ? 'no local session' : 'realized · not a forecast') + '</span></div>' +
     '<div class="pnl-row"><div class="huge">' + esc(usd(pnl, true)) + '</div>' +
     '<div class="delta ' + (day == null ? '' : (day >= 0 ? 'up' : 'down')) + '">' + (day == null ? '' : (day >= 0 ? '▲ ' : '▼ ')) + 'DAY ' + esc(day == null ? '—' : usd(day, true)) + '</div></div>' +
     lineSvg(series) +
@@ -735,7 +747,7 @@ function paint(st, jr, an, intel) {
 
   const chart = candleSvg(btcSeries(jr, st, a));
   document.getElementById('candles').innerHTML =
-    '<div class="ph"><span class="pt">Candle engine</span><span class="ps">journal BTC · 5m windows</span></div>' +
+    '<div class="ph"><span class="pt">Candle engine</span><span class="ps">' + (pub ? 'Binance BTCUSDT · 5m' : 'journal BTC · 5m windows') + '</span></div>' +
     chart.svg + '<div class="capline">' + esc(chart.note) + '</div>';
 
   document.getElementById('book').innerHTML =
@@ -942,12 +954,18 @@ async function loadSnapshot() {
 }
 async function refresh() {
   try {
-    const [stRes, jrRes, anRes, intelRes] = await Promise.all([
-      fetch('/api/state', { cache: 'no-store' }),
-      fetch('/api/journal', { cache: 'no-store' }),
-      fetch('/api/analysis', { cache: 'no-store' }).catch(function () { return { ok: false }; }),
-      fetch('/api/intel', { cache: 'no-store' }).catch(function () { return { ok: false }; })
-    ]);
+    const ctrl = new AbortController();
+    const timer = setTimeout(function () { ctrl.abort(); }, 2500);
+    let stRes, jrRes, anRes, intelRes;
+    try {
+      const parts = await Promise.all([
+        fetch('/api/state', { cache: 'no-store', signal: ctrl.signal }),
+        fetch('/api/journal', { cache: 'no-store', signal: ctrl.signal }),
+        fetch('/api/analysis', { cache: 'no-store', signal: ctrl.signal }).catch(function () { return { ok: false }; }),
+        fetch('/api/intel', { cache: 'no-store', signal: ctrl.signal }).catch(function () { return { ok: false }; })
+      ]);
+      stRes = parts[0]; jrRes = parts[1]; anRes = parts[2]; intelRes = parts[3];
+    } finally { clearTimeout(timer); }
     if (!stRes.ok) throw new Error('api/state ' + stRes.status);
     const st = await stRes.json();
     if (!st || st.error) throw new Error((st && st.error) || 'empty state');
@@ -958,17 +976,29 @@ async function refresh() {
     paint(st, jr, an, intel);
   } catch (err) {
     try {
-      const snap = await loadSnapshot();
-      sourceLabel = 'SNAPSHOT (not live)';
-      paint(snap.st, snap.jr, snap.an, snap.intel);
-    } catch (snapErr) {
-      const d = document.getElementById('disclaimer');
-      if (d) d.textContent = 'API unreachable and no snapshot. Not financial advice. No profit guarantee. This page does not place orders.';
+      if (typeof fetchLivePublic !== 'function') throw new Error('live fetch missing');
+      const live = await fetchLivePublic();
+      sourceLabel = 'LIVE PUBLIC (read-only)';
+      paint(live.st, live.jr, live.an, live.intel);
+    } catch (liveErr) {
+      try {
+        const snap = await loadSnapshot();
+        sourceLabel = 'SNAPSHOT (not live)';
+        paint(snap.st, snap.jr, snap.an, snap.intel);
+      } catch (snapErr) {
+        const d = document.getElementById('disclaimer');
+        if (d) d.textContent = 'API unreachable and public feeds failed. Not financial advice. No profit guarantee. This page does not place orders.';
+      }
     }
   }
 }
 
-setInterval(refresh, 5000);
+tickClock();
+setInterval(tickClock, 1000);
+const refreshBtn = document.getElementById('refreshBtn');
+if (refreshBtn) refreshBtn.onclick = function () { refresh(); };
+refresh();
+setInterval(refresh, 8000);
 </script>
 </body>
 </html>

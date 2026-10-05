@@ -1,9 +1,19 @@
-# Grok Desk (snapshot)
+# Grok Desk
 
-Public static snapshot of a Polymarket BTC Up/Down paper desk.
+Public Polymarket BTC Up/Down desk.
 
-This site does **not** place orders, does **not** hold private keys, and is **not** a live trading terminal.
+When this site is opened on GitHub Pages, `/api/state` is not available. The page then loads **live public data in the browser** and labels itself **LIVE PUBLIC (read-only)**. It does not place orders and does not hold a private key.
 
-Not financial advice. No profit guarantee.
+Public calls:
 
-When `/api/state` is unavailable (as on GitHub Pages), the page reads `data.json` and labels itself **SNAPSHOT — not live**.
+- `https://gamma-api.polymarket.com/events?slug=btc-updown-5m-{floor(unix/300)*300}`
+- the 15-minute sibling `btc-updown-15m-{floor(unix/900)*900}`
+- `https://clob.polymarket.com/book?token_id=…` for the Up and Down tokens
+- `https://data-api.binance.vision/api/v3/ticker/price?symbol=BTCUSDT`
+- `https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1m` and `interval=5m`
+
+Fair vs mid reuses the training distance-to-open model (BTC vs the window open, time left, short-term vol and momentum). It is not a quote and not an order.
+
+PnL, fills, and bankroll stay blank (`—` / no local session) unless a local `serve.py` answers `/api/state`. `data.json` is only a last-resort snapshot if those public feeds fail.
+
+Not financial advice. No profit guarantee. This page does not place orders.

@@ -1,11 +1,12 @@
-/* Grok Desk static shell. Snapshot only — no trading keys. */
+/* Grok Desk shell. Network-first so the public page stays on the latest HTML. No trading keys. */
 const BASE = new URL("./", self.location).pathname;
-const CACHE = "grok-desk-shell-v1";
+const CACHE = "grok-desk-shell-v2";
 const SHELL = [
   "",
   "index.html",
   "app.html",
   "dashboard.html",
+  "public-live.js",
   "data.json",
   "manifest.webmanifest",
   "app/icons/icon-192.png",
@@ -15,7 +16,7 @@ const SHELL = [
 ].map(function (p) { return BASE + p; });
 
 self.addEventListener("install", function (event) {
-  event.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); }));
+  event.waitUntil(self.skipWaiting());
 });
 self.addEventListener("activate", function (event) {
   event.waitUntil(caches.keys().then(function (keys) {
@@ -29,14 +30,11 @@ self.addEventListener("fetch", function (event) {
   if (url.pathname.indexOf("/api/") !== -1) return;
   const path = url.pathname;
   if (SHELL.indexOf(path) === -1 && path.indexOf(BASE + "app/") !== 0) return;
-  event.respondWith(caches.match(event.request).then(function (cached) {
-    const net = fetch(event.request).then(function (res) {
-      if (res && res.ok) {
-        const copy = res.clone();
-        caches.open(CACHE).then(function (c) { c.put(event.request, copy); });
-      }
-      return res;
-    }).catch(function () { return cached; });
-    return cached || net;
-  }));
+  event.respondWith(fetch(event.request).then(function (res) {
+    if (res && res.ok) {
+      const copy = res.clone();
+      caches.open(CACHE).then(function (c) { c.put(event.request, copy); });
+    }
+    return res;
+  }).catch(function () { return caches.match(event.request); }));
 });
