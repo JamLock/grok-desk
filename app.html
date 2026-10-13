@@ -1070,7 +1070,7 @@ async function fetchStandalone() {
   const btc = await fetchBtc();
   const events = await fetchJson(GAMMA + '/events/keyset?slug=' + encodeURIComponent(slug));
   const ev = Array.isArray(events) ? events[0] : (events && Array.isArray(events.events) ? events.events[0] : null);  // /events/keyset wraps results in .events; missing/empty -> no event
-  if (!ev) throw new Error('No Gamma event for ' + slug);
+  if (!ev || typeof ev !== 'object' || Array.isArray(ev)) throw new Error('No Gamma event for ' + slug);  // events[0] must be a plain object
   const m = (ev.markets || [])[0] || {};
   let outcomes = m.outcomes, prices = m.outcomePrices, tokenIds = m.clobTokenIds;
   if (typeof outcomes === 'string') { try { outcomes = JSON.parse(outcomes); } catch (e) {} }
