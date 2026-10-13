@@ -139,8 +139,8 @@
   }
 
   function marketBySlug(slug) {
-    return fetchJson(GAMMA + '/events?slug=' + encodeURIComponent(slug)).then(function (events) {
-      var ev = Array.isArray(events) ? events[0] : events;
+    return fetchJson(GAMMA + '/events/keyset?slug=' + encodeURIComponent(slug)).then(function (events) {
+      var ev = Array.isArray(events) ? events[0] : (events && Array.isArray(events.events) ? events.events[0] : null);  // /events/keyset wraps results in .events; missing/empty -> no event
       if (!ev) throw new Error('No Gamma event for ' + slug);
       var m = (ev.markets || [])[0] || {};
       var outcomes = parseMaybe(m.outcomes) || ['Up', 'Down'];

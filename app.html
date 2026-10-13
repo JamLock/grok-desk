@@ -1068,8 +1068,8 @@ async function fetchStandalone() {
   const wts = windowTs();
   const slug = 'btc-updown-5m-' + wts;
   const btc = await fetchBtc();
-  const events = await fetchJson(GAMMA + '/events?slug=' + encodeURIComponent(slug));
-  const ev = Array.isArray(events) ? events[0] : events;
+  const events = await fetchJson(GAMMA + '/events/keyset?slug=' + encodeURIComponent(slug));
+  const ev = Array.isArray(events) ? events[0] : (events && Array.isArray(events.events) ? events.events[0] : null);  // /events/keyset wraps results in .events; missing/empty -> no event
   if (!ev) throw new Error('No Gamma event for ' + slug);
   const m = (ev.markets || [])[0] || {};
   let outcomes = m.outcomes, prices = m.outcomePrices, tokenIds = m.clobTokenIds;
