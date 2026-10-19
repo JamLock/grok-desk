@@ -167,3 +167,6 @@ footer{padding:10px 14px calc(14px + env(safe-area-inset-bottom));font-size:11px
   .shell[data-pane="an"] .rt{display:none}.shell[data-pane="ob"] .an,.shell[data-pane="ts"] .an{display:none}
   .tabs{gap:18px}
 }
+/* D4 (redesign-1018b): 44 px touch targets up to iPad-Pro landscape widths (1024x768 included) */
+@media (max-width:1366px){#tf button,#bookSide button,.seg button,.refresh{min-height:44px}.refresh{display:inline-flex;align-items:center}}
+@media (min-width:1024px) and (max-width:1366px){.qtop .refresh{margin:-8px 0 -16px;border-color:transparent;color:var(--accent)}} /* 44 px hit area inside the fixed-height header without growing its row */

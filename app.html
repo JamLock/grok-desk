@@ -21,8 +21,8 @@
   <nav class="rail" aria-label="Pages"><div class="rail-in">
     <a href="dashboard.html" title="Desk"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 4-6"/></svg>Desk</a>
     <a href="app.html" class="on" title="iPad"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>iPad</a>
-    <span title="Order book"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM9 8h6M9 12h6M9 16h4"/></svg>Book</span>
-    <span title="Analysis below"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>Stats</span>
+    <a href="#" data-goto="ob" title="Order book"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM9 8h6M9 12h6M9 16h4"/></svg>Book</a>
+    <a href="#an" data-goto="an" title="Analysis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>Stats</a>
   </div></nav>
 
   <aside class="wl" id="wl" aria-label="Watchlist"><div class="wl-in">
@@ -55,7 +55,7 @@
   <div class="chartbox"><div id="chart" class="chart"></div><div class="tag" id="chartTag">BTCUSDT · loading…</div></div>
   <div class="tfbar">
     <div class="seg" id="tf"><button type="button" data-tf="1m" class="on">1 min</button><button type="button" data-tf="5m">5 min</button><button type="button" data-tf="15m">15 min</button><button type="button" data-tf="1h">1 hour</button></div>
-    <div class="legend">dashed = last price · dotted blue = 5m window open · left axis % · times PT</div>
+    <div class="legend">dashed = last price · dotted blue = 5m window open · left axis price · right axis % · times PT</div>
   </div>
   <div class="rtabs"><div class="seg" id="paneSeg"><button type="button" data-pane="ob" class="on">Order Book</button><button type="button" data-pane="ts">Time &amp; Sales</button><button type="button" data-pane="an">Analysis</button></div></div>
 
@@ -85,6 +85,7 @@
 <script src="vendor/lightweight-charts/lightweight-charts.standalone.production.js"></script>
 <script src="ptfmt.js"></script>
 <script src="public-live.js"></script>
+<script src="deskview.js"></script>
 <script src="desk.js"></script>
 </body>
 </html>

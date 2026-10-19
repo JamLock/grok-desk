@@ -1,6 +1,6 @@
 /* Grok Desk shell. Network-first so the public page stays on the latest HTML. No trading keys. */
 const BASE = new URL("./", self.location).pathname;
-const CACHE = "grok-desk-shell-v3";
+const CACHE = "grok-desk-shell-v4";
 const SHELL = [
   "",
   "index.html",
@@ -8,6 +8,7 @@ const SHELL = [
   "dashboard.html",
   "public-live.js",
   "desk.js",
+  "deskview.js",
   "desk.css",
   "ptfmt.js",
   "vendor/lightweight-charts/lightweight-charts.standalone.production.js",

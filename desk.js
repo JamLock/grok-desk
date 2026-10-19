@@ -4,9 +4,10 @@
    All rendering via textContent / CSSOM (CSP: script-src 'self', style-src 'self'). Times in PT. */
 (function () {
   'use strict';
-  var LC = window.LightweightCharts, PT = window.PTFMT, FEEDS = window.DeskFeeds;
+  var LC = window.LightweightCharts, PT = window.PTFMT, FEEDS = window.DeskFeeds, DV = window.DeskView;
   var UP = '#58d0a8', DN = '#f03068';
-  var S = { tf: '1m', side: 'up', source: '', st: null, jr: null, an: null, intel: null, t24: null, firstMid: {} };
+  var S = { tf: '1m', side: 'up', source: '', st: null, jr: null, an: null, intel: null, t24: null, firstMid: {}, snap: null };
+  function snapMode() { return DV.isSnapshot(S.source, S.st); }
   var $ = function (id) { return document.getElementById(id); };
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined && text !== null) e.textContent = text; return e; }
   function num(v) { var n = (v === null || v === undefined || v === '') ? NaN : Number(v); return isFinite(n) ? n : null; }
@@ -29,16 +30,17 @@
     layout: { background: { color: '#19223f' }, textColor: '#a8b0c0', fontSize: 11, attributionLogo: false },  // logo injects a <style>; attribution is in the footer
     grid: { vertLines: { visible: false }, horzLines: { visible: false } },  // Webull shows no gridlines
     crosshair: { mode: LC.CrosshairMode.Normal },
-    rightPriceScale: { borderColor: '#1a2238', minimumWidth: 66, scaleMargins: { top: 0.08, bottom: 0.14 } },
-    leftPriceScale: { visible: true, borderColor: '#1a2238', mode: LC.PriceScaleMode.Percentage, scaleMargins: { top: 0.08, bottom: 0.14 } },
+    // D3 (redesign-1018b): price axis on the LEFT, % axis on the RIGHT, as in the spec and Webull
+    leftPriceScale: { visible: true, borderColor: '#1a2238', minimumWidth: 66, scaleMargins: { top: 0.08, bottom: 0.14 } },
+    rightPriceScale: { visible: true, borderColor: '#1a2238', mode: LC.PriceScaleMode.Percentage, scaleMargins: { top: 0.08, bottom: 0.14 } },
     timeScale: { borderColor: '#1a2238', timeVisible: true, secondsVisible: false, tickMarkFormatter: PT.tickMark },
     localization: { timeFormatter: PT.crosshair }, autoSize: true
   });
   chart.applyOptions({ timeScale: { tickMarkFormatter: PT.tickMark } });
   // Lightweight Charts defaults (#26a69a / #ef5350) overridden with Webull teal / pink (spec §1)
-  var candles = chart.addCandlestickSeries({ upColor: UP, downColor: DN, borderVisible: false, borderUpColor: UP, borderDownColor: DN, wickUpColor: UP, wickDownColor: DN,
+  var candles = chart.addCandlestickSeries({ priceScaleId: 'left', upColor: UP, downColor: DN, borderVisible: false, borderUpColor: UP, borderDownColor: DN, wickUpColor: UP, wickDownColor: DN,
     priceLineStyle: LC.LineStyle.Dashed, priceLineColor: DN, priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
-  var pct = chart.addLineSeries({ priceScaleId: 'left', color: 'rgba(0,0,0,0)', lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false, baseLineVisible: false });
+  var pct = chart.addLineSeries({ priceScaleId: 'right', color: 'rgba(0,0,0,0)', lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false, baseLineVisible: false });
   var vol = chart.addHistogramSeries({ priceScaleId: 'vol', priceFormat: { type: 'volume' }, lastValueVisible: false, priceLineVisible: false });
   vol.priceScale().applyOptions({ scaleMargins: { top: 0.88, bottom: 0 }, visible: false });
   var openLine = null;
@@ -58,12 +60,16 @@
     candles.setMarkers(mk);
     var w = (S.st && S.st.window) || {};
     if (openLine) { candles.removePriceLine(openLine); openLine = null; }
-    if (num(w.open_btc) !== null) openLine = candles.createPriceLine({ price: num(w.open_btc), color: '#3088f8', lineWidth: 1, lineStyle: LC.LineStyle.Dotted, axisLabelVisible: true, title: '5m open' });
-    setText('chartTag', 'BTCUSDT · Binance spot · ' + S.tf + ' · ' + cs.length + ' bars · times PT');
+    if (!snapMode() && num(w.open_btc) !== null) openLine = candles.createPriceLine({ price: num(w.open_btc), color: '#3088f8', lineWidth: 1, lineStyle: LC.LineStyle.Dotted, axisLabelVisible: true, title: '5m open' });
+    setText('chartTag', 'BTCUSDT · Binance spot (live) · ' + S.tf + ' · ' + cs.length + ' bars · times PT' + (snapMode() ? ' · 5m open line hidden (snapshot mode)' : ''));
   }
   function loadChart(fit) {
     if (!FEEDS) return Promise.resolve();
-    return FEEDS.candles(S.tf).then(function (cs) { drawChart(cs); if (fit) chart.timeScale().fitContent(); })
+    return FEEDS.candles(S.tf).then(function (cs) {
+      drawChart(cs);
+      // D5: pad the visible range (~half a label each side) so a high/low label on an edge bar is not clipped
+      if (fit && cs.length) chart.timeScale().setVisibleLogicalRange({ from: -6, to: cs.length + 5 });
+    })
       .catch(function (e) { setText('chartTag', 'BTC chart unavailable (' + e.message + ')'); });
   }
 
@@ -84,8 +90,9 @@
   function paintWatchlist() {
     var st = S.st || {}, a = A(), t = S.t24, box = $('wlList');
     box.textContent = '';
-    box.appendChild(wlItem('BTCUSDT', 'Bitcoin spot · Binance', t ? f(t.last, 2) : f(st.last_price, 2),
-      t ? sgn(t.change_pct, 2) + '% 24h' : '—', t ? cls(t.change_pct) : 'muted', false, null));
+    if (snapMode()) t = null;  // never mix the live 24h ticker into snapshot mode
+    box.appendChild(wlItem('BTCUSDT', 'Bitcoin spot · ' + (snapMode() ? 'snapshot' : 'Binance'), t ? f(t.last, 2) : f(st.last_price, 2),
+      t ? sgn(t.change_pct, 2) + '% 24h' : (snapMode() ? 'snapshot' : '—'), t ? cls(t.change_pct) : 'muted', false, null));
     var cu = midChange('up', st.mid_up), cd = midChange('down', st.mid_down);
     box.appendChild(wlItem('BTC Up · 5m', 'Polymarket · ' + (st.slug || '—'), f(st.mid_up, 3), cu === null ? '—' : sgn(cu, 3) + ' since load', cls(cu), S.side === 'up', function () { S.side = 'up'; paintAll(); }));
     box.appendChild(wlItem('BTC Down · 5m', 'Polymarket · same window', f(st.mid_down, 3), cd === null ? '—' : sgn(cd, 3) + ' since load', cls(cd), S.side === 'down', function () { S.side = 'down'; paintAll(); }));
@@ -99,16 +106,14 @@
     return num(a.time_remaining_sec);
   }
   function paintHeader() {
-    var st = S.st || {}, a = A(), t = S.t24 || {}, w = st.window || {};
+    var st = S.st || {}, a = A(), h = DV.header(st, S.t24, S.source, S.snap);  // D1: deskview.js never mixes live + snapshot
     setText('qSym', 'BTC Up or Down · 5 min');
-    setText('qName', st.question || st.slug || '');
-    var last = num(t.last) !== null ? t.last : st.last_price, open = num(w.open_btc);
-    setText('qLast', f(last, 2));
-    var ch = (open !== null && num(last) !== null) ? num(last) - open : null;
-    setText('qChg', ch === null ? '—' : sgn(ch, 2) + ' (' + sgn(100 * ch / open, 3) + '%) vs 5m open', 'chg ' + cls(ch));
-    setText('qSub', 'BTCUSDT spot · window ' + (st.slug || '—') + ' · last tick ' + (st.last_tick_pt || '—'));
-    setText('qHigh', f(t.high, 2)); setText('qLow', f(t.low, 2)); setText('qVol', big(t.volume) + ' BTC');
-    setText('qOpen', f(open, 2)); setText('qPrev', f(t.prev_close, 2));
+    setText('qName', h.title);  // D2: market title in PT
+    setText('qLast', h.last);
+    setText('qChg', h.chg, h.chgCls);
+    setText('qSub', h.sub);
+    setText('qHigh', h.high); setText('qLow', h.low); setText('qVol', h.vol);
+    setText('qOpen', h.open); setText('qPrev', h.prev);
     setText('qUp', f(st.mid_up, 3)); setText('qDown', f(st.mid_down, 3)); setText('qFair', f(a.fair_up, 3));
     setText('qEdge', sgn(a.edge_up, 3), cls(a.edge_up)); setText('qLeft', mmss(timeLeft()));
     var b = $('srcBadge'); b.textContent = S.source || '—';
@@ -236,7 +241,8 @@
       st.mode = 'SNAPSHOT'; st.live_polymarket = false; st.live_armed = false;
       var note = 'SNAPSHOT — not live. Not financial advice. No profit guarantee. This page does not place orders.';
       st.disclaimer = note + (st.disclaimer ? (' ' + st.disclaimer) : '');
-      return { st: st, jr: snap.journal || snap.jr || { events: [] }, an: snap.analysis || snap.an || {}, intel: snap.intel || {} };
+      return { st: st, jr: snap.journal || snap.jr || { events: [] }, an: snap.analysis || snap.an || {}, intel: snap.intel || {},
+               snap: { captured_pt: snap.captured_pt || null } };
     });
   }
   function getJson(url, signal) { return fetch(url, { cache: 'no-store', signal: signal }); }
@@ -251,9 +257,10 @@
       }, function (e) { clearTimeout(timer); throw e; })
       .then(function (v) { if (!v[0] || v[0].error) throw new Error((v[0] && v[0].error) || 'empty state'); return { st: v[0], jr: v[1], an: v[2], intel: v[3] }; });
   }
-  function use(d, label) { S.st = d.st; S.jr = d.jr; S.an = d.an; S.intel = d.intel; S.source = label; paintAll(); stamp(); }
+  function use(d, label) { S.st = d.st; S.jr = d.jr; S.an = d.an; S.intel = d.intel; S.snap = d.snap || null; S.source = label; paintAll(); stamp(); }
   // read-only status strip in the slot Webull uses for Trade (spec §6.1)
-  function stamp() { setText('asOf', PTF.clock.format(new Date())); }
+  // D1: in snapshot mode the strip shows "snapshot <its capture time>", never the current time
+  function stamp() { setText('asOf', S.st ? DV.header(S.st, S.t24, S.source, S.snap).asOf : PTF.clock.format(new Date())); }
   function refresh() {
     var t24 = FEEDS ? FEEDS.ticker24h().then(function (t) { S.t24 = t; }).catch(function () { S.t24 = null; }) : Promise.resolve();
     var data = loadLocal().then(function (d) { use(d, 'local /api'); }).catch(function () {
@@ -288,6 +295,16 @@
     b.addEventListener('click', function () {
       $('shell').setAttribute('data-pane', b.getAttribute('data-pane'));
       Array.prototype.forEach.call(document.querySelectorAll('#paneSeg button'), function (x) { x.classList.toggle('on', x === b); });
+    });
+  });
+  // D6: rail "Book" / "Stats" switch to that pane (tab layouts) and scroll it into view
+  Array.prototype.forEach.call(document.querySelectorAll('.rail [data-goto]'), function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      var pane = a.getAttribute('data-goto'), btn = document.querySelector('#paneSeg button[data-pane="' + pane + '"]');
+      if (btn) btn.click();
+      var target = pane === 'an' ? $('an') : document.querySelector('aside.rt');
+      if (target) target.scrollIntoView({ block: 'start', behavior: 'smooth' });
     });
   });
   if (window.matchMedia && window.matchMedia('(max-width: 767px)').matches) $('qdet').removeAttribute('open');
