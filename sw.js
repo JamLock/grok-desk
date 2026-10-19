@@ -1,6 +1,6 @@
 /* Grok Desk shell. Network-first so the public page stays on the latest HTML. No trading keys. */
 const BASE = new URL("./", self.location).pathname;
-const CACHE = "grok-desk-shell-v6";
+const CACHE = "grok-desk-shell-v7";
 const SHELL = [
   "",
   "index.html",

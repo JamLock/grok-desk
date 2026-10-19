@@ -21,6 +21,7 @@
   // Binance request can never leave the page stuck on 'loading…'. The caller falls back to the snapshot.
   var FETCH_TIMEOUT_MS = 9000;   // per request
   var LIVE_DEADLINE_MS = 10000;  // whole fetchLivePublic() call
+  var BOOK15_MS = 4000;          // review-1019: the extra 15m book may never push a refresh past LIVE_DEADLINE_MS
   function ms(name, dflt) { var v = Number(global[name]); return v > 0 ? v : dflt; }  // test hook (node test shortens it)
   function timedFetch(url, opts) {
     var ctrl = typeof AbortController === 'function' ? new AbortController() : null, limit = ms('DESK_FETCH_TIMEOUT_MS', FETCH_TIMEOUT_MS), timer;
@@ -111,6 +112,12 @@
     else if (ba != null) mid = ba;
     else if (bb != null) mid = bb;
     return { mid: mid, bid: bb, ask: ba };
+  }
+
+  // Where a mid came from: 'clob' (public book), 'gamma' (outcomePrices fallback, can lag), or null.
+  function midSource(book, gammaPx) {
+    if (book && book.mid && book.mid.mid != null) return 'clob';
+    return gammaPx != null ? 'gamma' : null;
   }
 
   function depth(rows) {
@@ -287,12 +294,19 @@
       var fair15 = (m15 && open15 != null && isFinite(btc)) ? fairOf(btc, open15, remain15, closes, WINDOW_15) : null;
       return Promise.all([
         bookSide(m5.upTok).catch(function () { return null; }),
-        bookSide(m5.downTok).catch(function () { return null; })
+        bookSide(m5.downTok).catch(function () { return null; }),
+        // mid15-clob: the 15m Up mid now comes from its CLOB book too (Gamma outcomePrices can lag the
+        // book by 0.2+); Gamma stays the fallback. A failed 15m book never fails the 5m tick.
+        // review-1019: capped at BOOK15_MS; a slow 15m book falls back to Gamma instead of costing the tick.
+        (m15 && m15.upTok) ? withDeadline(bookSide(m15.upTok), ms('DESK_BOOK15_MS', BOOK15_MS), '15m book').catch(function () { return null; }) : Promise.resolve(null)
       ]).then(function (books) {
         var upBook = books[0];
         var dnBook = books[1];
+        var up15Book = books[2];
         var midUp = upBook && upBook.mid.mid != null ? upBook.mid.mid : m5.gammaUp;
         var midDown = dnBook && dnBook.mid.mid != null ? dnBook.mid.mid : m5.gammaDown;
+        var midUpSource = midSource(upBook, m5.gammaUp);
+        var midDownSource = midSource(dnBook, m5.gammaDown);
         var edgeUp = (fair5 && midUp != null) ? fair5.fair_up - midUp : null;
         var edgeDown = (fair5 && midDown != null) ? fair5.fair_down - midDown : null;
         var bidUp = upBook ? upBook.rawDepthBid : 0;
@@ -304,7 +318,8 @@
         }).filter(function (c) { return isFinite(c.open) && isFinite(c.close); });
         var related = [];
         if (m15) {
-          var mid15 = m15.gammaUp;
+          var mid15 = up15Book && up15Book.mid.mid != null ? up15Book.mid.mid : m15.gammaUp;
+          var mid15Source = midSource(up15Book, m15.gammaUp);
           var gap = null;
           if (fair15 && mid15 != null) gap = round4(fair15.fair_up - mid15);
           else if (midUp != null && mid15 != null) gap = round4(mid15 - midUp);
@@ -312,7 +327,8 @@
             label: 'btc_15m',
             slug: slug15,
             gap: gap,
-            mid_up: mid15,
+            mid_up: round4(mid15),
+            mid_source: mid15Source,
             fair_up: fair15 ? round4(fair15.fair_up) : null
           });
         }
@@ -326,6 +342,8 @@
           fair_down: fair5 ? round4(fair5.fair_down) : null,
           mid_up: round4(midUp),
           mid_down: round4(midDown),
+          mid_up_source: midUpSource,
+          mid_down_source: midDownSource,
           edge_up: round4(edgeUp),
           edge_down: round4(edgeDown),
           mispricing_up_vs_mid: round4(edgeUp),

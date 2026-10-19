@@ -111,6 +111,7 @@
     if (!S.firstMid[key] || S.firstMid[key].slug !== slug) S.firstMid[key] = { slug: slug, v: v };
     return v - S.firstMid[key].v;
   }
+  function srcName(s) { return s === 'clob' ? 'CLOB book' : (s === 'gamma' ? 'Gamma price (can lag the book)' : '—'); }
   function paintWatchlist() {
     var st = S.st || {}, a = A(), t = S.t24, box = $('wlList');
     box.textContent = '';
@@ -121,7 +122,7 @@
     box.appendChild(wlItem('BTC Up · 5m', 'Polymarket · ' + (st.slug || '—'), f(st.mid_up, 3), cu === null ? '—' : sgn(cu, 3) + ' since load', cls(cu), S.side === 'up', function () { S.side = 'up'; paintAll(); }));
     box.appendChild(wlItem('BTC Down · 5m', 'Polymarket · same window', f(st.mid_down, 3), cd === null ? '—' : sgn(cd, 3) + ' since load', cls(cd), S.side === 'down', function () { S.side = 'down'; paintAll(); }));
     (a.related_markets || []).forEach(function (r) {
-      box.appendChild(wlItem('BTC Up · 15m', 'Polymarket · ' + (r.slug || ''), f(r.mid_up, 3), r.gap === null || r.gap === undefined ? '—' : 'gap ' + sgn(r.gap, 3), cls(r.gap), false, null));
+      box.appendChild(wlItem('BTC Up · 15m', 'Polymarket · ' + (r.slug || '') + (r.mid_source === 'gamma' ? ' · Gamma price' : ''), f(r.mid_up, 3), r.gap === null || r.gap === undefined ? '—' : 'gap ' + sgn(r.gap, 3), cls(r.gap), false, null));
     });
   }
   // review-1019 D1a: no countdown in snapshot mode (header '—'; the Regime card shows the snapshot's own value)
@@ -214,6 +215,7 @@
     var c = card('Fair vs mid (5m window)');
     kv(c, 'Fair Up / Down', f(a.fair_up, 3) + ' / ' + f(a.fair_down, 3));
     kv(c, 'Mid Up / Down', f(a.mid_up, 3) + ' / ' + f(a.mid_down, 3));
+    if (a.mid_up_source) kv(c, 'Mid source', a.mid_down_source && a.mid_down_source !== a.mid_up_source ? 'Up ' + srcName(a.mid_up_source) + ' / Down ' + srcName(a.mid_down_source) : srcName(a.mid_up_source));
     kv(c, 'Edge Up (fair − mid)', sgn(a.edge_up, 3), cls(a.edge_up)); bar(c, a.edge_up, 0.15);
     kv(c, 'Edge Down', sgn(a.edge_down, 3), cls(a.edge_down)); bar(c, a.edge_down, 0.15);
     c.appendChild(el('div', 'tiny muted', (snapMode() ? 'From the snapshot of ' + DV.snapLabel(S.snap) + '. ' : '') + 'Training distance-to-open model; not a quote and not an order.'));
@@ -227,7 +229,7 @@
     c = card('15-minute sibling');
     var rel = a.related_markets || [];
     if (!rel.length) c.appendChild(el('div', 'muted', snapMode() ? 'Not in the snapshot.' : 'No 15m market found for this window.'));
-    rel.forEach(function (r) { kv(c, 'Slug', r.slug || '—'); kv(c, 'Mid Up', f(r.mid_up, 3)); kv(c, 'Fair Up', f(r.fair_up, 3)); kv(c, 'Gap', sgn(r.gap, 3), cls(r.gap)); });
+    rel.forEach(function (r) { kv(c, 'Slug', r.slug || '—'); kv(c, 'Mid Up', f(r.mid_up, 3)); if (r.mid_source) kv(c, 'Mid source', srcName(r.mid_source)); kv(c, 'Fair Up', f(r.fair_up, 3)); kv(c, 'Gap', sgn(r.gap, 3), cls(r.gap)); });
     c = card(snapMode() ? 'Session (snapshot)' : 'Session (local only)');
     kv(c, 'Bankroll', usd(st.bankroll)); kv(c, 'Realized PnL', usd(st.realized_pnl), cls(st.realized_pnl));
     kv(c, 'Daily PnL', usd(st.daily_pnl), cls(st.daily_pnl)); kv(c, 'Fills', st.fills === null || st.fills === undefined ? '—' : String(st.fills));
