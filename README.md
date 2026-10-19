@@ -23,6 +23,6 @@ PnL, fills, and bankroll stay blank (`—` / no local session) unless a local `s
 - **Gamma endpoint.** Market lookup uses `https://gamma-api.polymarket.com/events/keyset?slug=…`. The older `/events?slug=…` is deprecated by Polymarket (sunset 2026-05-01) and only works for now. `/events/keyset` returns `{ "events": [ … ] }`, so code reads `events[0]` from that wrapper and still accepts a bare list; a missing or empty `events` means no event.
 - **Pages base path.** GitHub Pages serves this site under `/grok-desk/`, so in-page navigation must use **relative** links (`app.html`, `dashboard.html`), never root-absolute ones (`/app.html`). Root-absolute URLs resolve to `https://jamlock.github.io/app.html` and 404 (expected). Commit `13e0961` switched the HTML to relative links; keep it that way.
 - **iPad title.** The iPad home-screen title (`apple-mobile-web-app-title`) is `Grok Desk` (it was `PM Trader`).
-- **No Kalshi data on this site.** Kalshi recorder data must never be published into `data.json` or anywhere on Pages (Kalshi developer agreement and Jack's rule).
+- **Polymarket and public BTC prices only.** Data from the separate local exchange recorder must never be published into `data.json` or anywhere on Pages (that exchange's developer agreement bars redistribution, and it is Jack's rule).
 
 Not financial advice. No profit guarantee. This page does not place orders.

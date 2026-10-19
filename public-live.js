@@ -4,7 +4,7 @@
   var WINDOW_15 = 900;
   var GAMMA = 'https://gamma-api.polymarket.com';
   var CLOB = 'https://clob.polymarket.com';
-  var BINANCE = 'https://data-api.binance.vision';
+  var BINANCE_HOSTS = ['https://data-api.binance.vision', 'https://api.binance.us'];  // primary, then fallback (api.binance.com can 451)
   var MIN_P = 0.02;
   var MAX_P = 0.98;
   var BASE_VOL_FLOOR = 0.00015;
@@ -21,6 +21,51 @@
     return fetch(url, { headers: { Accept: 'application/json' }, mode: 'cors', cache: 'no-store' }).then(function (r) {
       if (!r.ok) throw new Error(url + ' → ' + r.status);
       return r.json();
+    });
+  }
+
+  // BTC spot from Binance public market data: try data-api.binance.vision, then api.binance.us.
+  function binance(path) {
+    var i = 0;
+    function next(err) {
+      if (i >= BINANCE_HOSTS.length) return Promise.reject(err || new Error('binance unavailable'));
+      var host = BINANCE_HOSTS[i++];
+      return fetchJson(host + path).catch(next);
+    }
+    return next();
+  }
+
+  var TF = { '1m': ['1m', 120], '5m': ['5m', 120], '15m': ['15m', 96], '1h': ['1h', 96] };
+  // OHLCV candles for the chart; time = UTC epoch seconds (lightweight-charts format).
+  function fetchCandles(tf) {
+    var t = TF[tf] || TF['1m'];
+    return binance('/api/v3/klines?symbol=BTCUSDT&interval=' + t[0] + '&limit=' + t[1]).then(function (rows) {
+      return (rows || []).map(function (k) {
+        return { time: Math.floor(Number(k[0]) / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4], volume: +k[5] };
+      }).filter(function (c) { return isFinite(c.open) && isFinite(c.close) && isFinite(c.high) && isFinite(c.low); });
+    });
+  }
+  // Recent public BTCUSDT spot trades (Binance), newest first. Webull-style tick rule (spec §5):
+  // side = 'up' / 'down' / 'flat' versus the PREVIOUS trade's price; taker = 'buy' / 'sell' kept for reference.
+  // The oldest trade in the batch has no previous trade, so it is 'flat'.
+  function tickSides(ts) {
+    var prev = null;
+    ts.forEach(function (t) { t.side = prev === null || t.price === prev ? 'flat' : (t.price > prev ? 'up' : 'down'); prev = t.price; });
+    return ts;
+  }
+  function fetchTrades(limit) {
+    return binance('/api/v3/trades?symbol=BTCUSDT&limit=' + (limit || 40)).then(function (rows) {
+      var ts = (rows || []).map(function (t) {
+        return { id: Number(t.id), ts_ms: Number(t.time), price: +t.price, size: +t.qty, taker: t.isBuyerMaker ? 'sell' : 'buy' };
+      }).filter(function (t) { return isFinite(t.price) && isFinite(t.size) && isFinite(t.ts_ms); });
+      ts.sort(function (a, b) { return a.ts_ms - b.ts_ms || a.id - b.id; });
+      return tickSides(ts).reverse();
+    });
+  }
+  function fetchTicker24h() {
+    return binance('/api/v3/ticker/24hr?symbol=BTCUSDT').then(function (d) {
+      return { last: +d.lastPrice, change: +d.priceChange, change_pct: +d.priceChangePercent, high: +d.highPrice,
+               low: +d.lowPrice, open: +d.openPrice, prev_close: +d.prevClosePrice, volume: +d.volume };
     });
   }
 
@@ -199,9 +244,9 @@
     var remain15 = Math.max(0, w15 + WINDOW_15 - nowS);
 
     return Promise.all([
-      fetchJson(BINANCE + '/api/v3/ticker/price?symbol=BTCUSDT'),
-      fetchJson(BINANCE + '/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=40'),
-      fetchJson(BINANCE + '/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=24'),
+      binance('/api/v3/ticker/price?symbol=BTCUSDT'),
+      binance('/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=40'),
+      binance('/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=24'),
       marketBySlug(slug5),
       marketBySlug(slug15).catch(function () { return null; })
     ]).then(function (parts) {
@@ -252,6 +297,8 @@
           });
         }
         var analysis = {
+          window_start_ms: w5 * 1000,
+          window_end_ms: (w5 + WINDOW_5) * 1000,
           ts_pt: ts,
           slug: slug5,
           btc: btc,
@@ -342,4 +389,5 @@
   }
 
   global.fetchLivePublic = fetchLivePublic;
+  global.DeskFeeds = { candles: fetchCandles, trades: fetchTrades, tickSides: tickSides, ticker24h: fetchTicker24h, hosts: BINANCE_HOSTS.slice() };
 })(typeof globalThis !== 'undefined' ? globalThis : window);
