@@ -35,11 +35,21 @@
     var timer, hard = new Promise(function (_, rej) { timer = setTimeout(function () { rej(new Error(what + ' timed out after ' + limit + ' ms')); }, limit); });
     return Promise.race([p, hard]).then(function (v) { clearTimeout(timer); return v; }, function (e) { clearTimeout(timer); throw e; });
   }
-  function fetchJson(url) {
-    return timedFetch(url, { headers: { Accept: 'application/json' }, mode: 'cors', cache: 'no-store' }).then(function (r) {
-      if (!r.ok) throw new Error(url + ' → ' + r.status);
-      return withDeadline(r.json(), ms('DESK_FETCH_TIMEOUT_MS', FETCH_TIMEOUT_MS), 'body of ' + url);  // a trickling body is bounded too
+  // review-1019b: ONE AbortController timer covers headers AND body. When it fires the request itself is
+  // aborted (a trickling body is cancelled, not left open in the background). limitMs defaults to the N1
+  // per-request timeout; the 15m book passes its own, shorter, cap.
+  function fetchJson(url, limitMs) {
+    var limit = limitMs || ms('DESK_FETCH_TIMEOUT_MS', FETCH_TIMEOUT_MS), timer;
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var o = { headers: { Accept: 'application/json' }, mode: 'cors', cache: 'no-store' }; if (ctrl) o.signal = ctrl.signal;
+    var hard = new Promise(function (_, rej) {
+      timer = setTimeout(function () { if (ctrl) ctrl.abort(); rej(new Error('timeout after ' + limit + ' ms: ' + url)); }, limit);
     });
+    var p = fetch(url, o).then(function (r) {
+      if (!r.ok) throw new Error(url + ' → ' + r.status);
+      return r.json();
+    });
+    return Promise.race([p, hard]).then(function (v) { clearTimeout(timer); return v; }, function (e) { clearTimeout(timer); throw e; });
   }
 
   // BTC spot from Binance public market data: try data-api.binance.vision, then api.binance.us.
@@ -249,6 +259,27 @@
     });
   }
 
+  // review-1019b: the 15m Up book is used only if it is the book we asked for (asset_id), has BOTH sides
+  // and is not crossed/locked (best bid < best ask). Anything else -> null + reason, and the caller falls
+  // back to Gamma (labelled 'can lag the book'). The whole request (headers + body) is capped at BOOK15_MS.
+  function validBook(book, tokenId) {
+    if (!book || typeof book !== 'object') return 'no_book';
+    if (String(book.asset_id) !== String(tokenId)) return 'wrong_token';
+    var m = midFromBook(book);
+    if (m.bid == null || m.ask == null) return 'one_sided';
+    if (!(m.bid < m.ask)) return 'crossed';
+    return null;
+  }
+  function book15(tokenId) {
+    if (!tokenId) return Promise.resolve({ book: null, reject: 'no_token' });
+    var limit = Math.min(ms('DESK_BOOK15_MS', BOOK15_MS), ms('DESK_FETCH_TIMEOUT_MS', FETCH_TIMEOUT_MS));
+    return fetchJson(CLOB + '/book?token_id=' + encodeURIComponent(tokenId), limit).then(function (book) {
+      var bad = validBook(book, tokenId);
+      if (bad) return { book: null, reject: bad };
+      return { book: { mid: midFromBook(book), n_bids: book.bids.length, n_asks: book.asks.length }, reject: null };
+    }, function (e) { return { book: null, reject: /timeout/.test(String(e && e.message)) ? 'timeout' : 'error' }; });
+  }
+
   function openAt(klines, tsMs) {
     var open = null;
     (klines || []).forEach(function (k) {
@@ -297,12 +328,12 @@
         bookSide(m5.downTok).catch(function () { return null; }),
         // mid15-clob: the 15m Up mid now comes from its CLOB book too (Gamma outcomePrices can lag the
         // book by 0.2+); Gamma stays the fallback. A failed 15m book never fails the 5m tick.
-        // review-1019: capped at BOOK15_MS; a slow 15m book falls back to Gamma instead of costing the tick.
-        (m15 && m15.upTok) ? withDeadline(bookSide(m15.upTok), ms('DESK_BOOK15_MS', BOOK15_MS), '15m book').catch(function () { return null; }) : Promise.resolve(null)
+        // review-1019/1019b: capped at BOOK15_MS (abort covers the body) and validated (validBook).
+        m15 ? book15(m15.upTok) : Promise.resolve({ book: null, reject: 'no_market' })
       ]).then(function (books) {
         var upBook = books[0];
         var dnBook = books[1];
-        var up15Book = books[2];
+        var up15Book = books[2].book, up15Reject = books[2].reject;
         var midUp = upBook && upBook.mid.mid != null ? upBook.mid.mid : m5.gammaUp;
         var midDown = dnBook && dnBook.mid.mid != null ? dnBook.mid.mid : m5.gammaDown;
         var midUpSource = midSource(upBook, m5.gammaUp);
@@ -321,14 +352,15 @@
           var mid15 = up15Book && up15Book.mid.mid != null ? up15Book.mid.mid : m15.gammaUp;
           var mid15Source = midSource(up15Book, m15.gammaUp);
           var gap = null;
+          // review-1019b: 'Gap' is fair15 - mid15 only; without fair15 it is '—' (no 15m-minus-5m stand-in)
           if (fair15 && mid15 != null) gap = round4(fair15.fair_up - mid15);
-          else if (midUp != null && mid15 != null) gap = round4(mid15 - midUp);
           related.push({
             label: 'btc_15m',
             slug: slug15,
             gap: gap,
             mid_up: round4(mid15),
             mid_source: mid15Source,
+            book_reject: up15Reject,
             fair_up: fair15 ? round4(fair15.fair_up) : null
           });
         }
