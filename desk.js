@@ -289,7 +289,7 @@
       }, function (e) { clearTimeout(timer); throw e; })
       .then(function (v) { if (!v[0] || v[0].error) throw new Error((v[0] && v[0].error) || 'empty state'); return { st: v[0], jr: v[1], an: v[2], intel: v[3] }; });
   }
-  function use(d, label) { S.noData = false; S.st = d.st; S.jr = d.jr; S.an = d.an; S.intel = d.intel; S.snap = d.snap || null; S.source = label; paintAll(); stamp(); tagLive(); }
+  function use(d, label) { stripNoData(false); S.noData = false; S.st = d.st; S.jr = d.jr; S.an = d.an; S.intel = d.intel; S.snap = d.snap || null; S.source = label; paintAll(); stamp(); tagLive(); }
   // read-only status strip in the slot Webull uses for Trade (spec §6.1)
   // D1: in snapshot mode the strip shows "snapshot <its capture time>", never the current time
   // N1: before any source has answered the strip shows a dash, never the current time
@@ -301,10 +301,26 @@
     S.noData = true; S.source = 'NO DATA';
     var b = $('srcBadge'); b.textContent = 'NO DATA'; b.className = 'badge nodata';
     var msg = 'No data: the local API, the live public feeds and the data.json snapshot all failed. Retrying every 8 s.';
-    setText('qSub', msg); setText('asOf', '—'); setText('clock', '—');
+    setText('qSub', msg); setText('asOf', '—'); setText('clock', '—'); stripNoData(true);
     var an = $('an'); an.textContent = ''; an.appendChild(el('div', 'empty nodata', msg));
     var wl = $('wlList'); wl.textContent = ''; wl.appendChild(el('div', 'empty nodata', 'No data'));
     setText('disclaimer', 'No data. Not financial advice. No profit guarantee. This page does not place orders.');
+  }
+  // review-1019c: with no data the footer strip says so plainly ('Read-only · No data loaded') instead of
+  // 'data as of — PT'; the original nodes (incl. #asOf) are kept and put back when a source answers.
+  var stripKept = null;
+  function stripNoData(on) {
+    var st = $('statusStrip'); if (!st) return;
+    if (on && !stripKept) {
+      stripKept = [];
+      while (st.firstChild && st.firstChild.nodeName !== 'SMALL') stripKept.push(st.removeChild(st.firstChild));
+      st.insertBefore(el('span', 'nodata-strip', 'Read-only · No data loaded'), st.firstChild);
+    } else if (!on && stripKept) {
+      var first = st.firstChild; if (first && first.className === 'nodata-strip') st.removeChild(first);
+      var before = st.firstChild;
+      stripKept.forEach(function (n) { st.insertBefore(n, before); });
+      stripKept = null;
+    }
   }
   var inFlight = null;
   function refresh() {
@@ -359,9 +375,10 @@
     });
   });
   if (window.matchMedia && window.matchMedia('(max-width: 767px)').matches) $('qdet').removeAttribute('open');
-  // review-1019b: the header clock (shown >= 1280 px) never shows 'now' in snapshot mode or with no data
+  // review-1019b/1019c: the header clock (shown >= 1280 px) never shows 'now' in snapshot mode, with no data,
+  // or while still loading (no source has answered yet): '—' until live data is on screen
   function tick() {
-    setText('clock', snapMode() ? 'snapshot ' + DV.snapLabel(S.snap) : S.noData ? '—' : PTF.clock.format(new Date()) + ' PT');
+    setText('clock', snapMode() ? 'snapshot ' + DV.snapLabel(S.snap) : (S.noData || !S.st) ? '—' : PTF.clock.format(new Date()) + ' PT');
     setText('qLeft', mmss(timeLeft()));
   }
   tick(); setInterval(tick, 1000);

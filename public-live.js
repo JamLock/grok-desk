@@ -259,24 +259,38 @@
     });
   }
 
-  // review-1019b: the 15m Up book is used only if it is the book we asked for (asset_id), has BOTH sides
-  // and is not crossed/locked (best bid < best ask). Anything else -> null + reason, and the caller falls
-  // back to Gamma (labelled 'can lag the book'). The whole request (headers + body) is capped at BOOK15_MS.
-  function validBook(book, tokenId) {
-    if (!book || typeof book !== 'object') return 'no_book';
-    if (String(book.asset_id) !== String(tokenId)) return 'wrong_token';
-    var m = midFromBook(book);
-    if (m.bid == null || m.ask == null) return 'one_sided';
-    if (!(m.bid < m.ask)) return 'crossed';
-    return null;
+  // review-1019b/1019c: the 15m Up book is used only if it is the book we asked for (asset_id), bids and asks
+  // are arrays of levels whose prices are all finite and strictly inside (0, 1), it has BOTH sides and it is
+  // not crossed/locked (best bid < best ask). Anything else -> null + reason ('no_book', 'wrong_token',
+  // 'malformed', 'out_of_range', 'one_sided', 'crossed'), and the caller falls back to Gamma (labelled 'can
+  // lag the book'). Parsing never throws: any error is 'malformed'. The whole request (headers + body) is
+  // capped at BOOK15_MS.
+  function px15(level) {
+    if (!level || typeof level !== 'object') return NaN;
+    var p = level.price;
+    if (typeof p === 'string') p = p.trim() === '' ? NaN : Number(p);
+    return typeof p === 'number' ? p : NaN;
+  }
+  function parse15(book, tokenId) {
+    if (!book || typeof book !== 'object' || Array.isArray(book)) return { reject: 'no_book' };
+    if (String(book.asset_id) !== String(tokenId)) return { reject: 'wrong_token' };
+    if (!Array.isArray(book.bids) || !Array.isArray(book.asks)) return { reject: 'malformed' };
+    var bids = book.bids.map(px15), asks = book.asks.map(px15), all = bids.concat(asks);
+    for (var i = 0; i < all.length; i++) if (!isFinite(all[i])) return { reject: 'malformed' };
+    for (var j = 0; j < all.length; j++) if (!(all[j] > 0 && all[j] < 1)) return { reject: 'out_of_range' };
+    if (!bids.length || !asks.length) return { reject: 'one_sided' };
+    var bb = Math.max.apply(null, bids), ba = Math.min.apply(null, asks);
+    if (!(bb < ba)) return { reject: 'crossed' };
+    return { reject: null, book: { mid: { mid: (bb + ba) / 2, bid: bb, ask: ba }, n_bids: bids.length, n_asks: asks.length } };
   }
   function book15(tokenId) {
     if (!tokenId) return Promise.resolve({ book: null, reject: 'no_token' });
     var limit = Math.min(ms('DESK_BOOK15_MS', BOOK15_MS), ms('DESK_FETCH_TIMEOUT_MS', FETCH_TIMEOUT_MS));
     return fetchJson(CLOB + '/book?token_id=' + encodeURIComponent(tokenId), limit).then(function (book) {
-      var bad = validBook(book, tokenId);
-      if (bad) return { book: null, reject: bad };
-      return { book: { mid: midFromBook(book), n_bids: book.bids.length, n_asks: book.asks.length }, reject: null };
+      try {
+        var r = parse15(book, tokenId);
+        return r.reject ? { book: null, reject: r.reject } : { book: r.book, reject: null };
+      } catch (e) { return { book: null, reject: 'malformed' }; }
     }, function (e) { return { book: null, reject: /timeout/.test(String(e && e.message)) ? 'timeout' : 'error' }; });
   }
 
@@ -328,7 +342,7 @@
         bookSide(m5.downTok).catch(function () { return null; }),
         // mid15-clob: the 15m Up mid now comes from its CLOB book too (Gamma outcomePrices can lag the
         // book by 0.2+); Gamma stays the fallback. A failed 15m book never fails the 5m tick.
-        // review-1019/1019b: capped at BOOK15_MS (abort covers the body) and validated (validBook).
+        // review-1019/1019b: capped at BOOK15_MS (abort covers the body) and validated (parse15).
         m15 ? book15(m15.upTok) : Promise.resolve({ book: null, reject: 'no_market' })
       ]).then(function (books) {
         var upBook = books[0];
