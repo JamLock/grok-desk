@@ -124,8 +124,10 @@
       box.appendChild(wlItem('BTC Up · 15m', 'Polymarket · ' + (r.slug || ''), f(r.mid_up, 3), r.gap === null || r.gap === undefined ? '—' : 'gap ' + sgn(r.gap, 3), cls(r.gap), false, null));
     });
   }
+  // review-1019 D1a: no countdown in snapshot mode (header '—'; the Regime card shows the snapshot's own value)
   function timeLeft() {
     var a = A();
+    if (snapMode()) return null;
     if (num(a.window_end_ms) !== null) return Math.max(0, (num(a.window_end_ms) - Date.now()) / 1000);
     return num(a.time_remaining_sec);
   }
@@ -214,28 +216,31 @@
     kv(c, 'Mid Up / Down', f(a.mid_up, 3) + ' / ' + f(a.mid_down, 3));
     kv(c, 'Edge Up (fair − mid)', sgn(a.edge_up, 3), cls(a.edge_up)); bar(c, a.edge_up, 0.15);
     kv(c, 'Edge Down', sgn(a.edge_down, 3), cls(a.edge_down)); bar(c, a.edge_down, 0.15);
-    c.appendChild(el('div', 'tiny muted', 'Training distance-to-open model; not a quote and not an order.'));
+    c.appendChild(el('div', 'tiny muted', (snapMode() ? 'From the snapshot of ' + DV.snapLabel(S.snap) + '. ' : '') + 'Training distance-to-open model; not a quote and not an order.'));
     c = card('Regime');
-    kv(c, 'Time left', mmss(timeLeft())); kv(c, 'Time pressure', f(a.time_pressure, 2));
+    if (snapMode()) kv(c, 'Time left at snapshot', mmss(a.snapshot_time_left_sec));
+    else kv(c, 'Time left', mmss(timeLeft()));
+    kv(c, 'Time pressure', f(a.time_pressure, 2));
     kv(c, 'Volatility', a.vol_regime || '—'); kv(c, 'Momentum', a.momentum_regime || '—');
     kv(c, 'Book imbalance (Up vs Down bids)', sgn(a.book_imbalance, 2), cls(a.book_imbalance)); bar(c, a.book_imbalance, 1);
     kv(c, 'Ask depth Up / Down', big(a.ask_depth_up) + ' / ' + big(a.ask_depth_down));
     c = card('15-minute sibling');
     var rel = a.related_markets || [];
-    if (!rel.length) c.appendChild(el('div', 'muted', 'No 15m market found for this window.'));
+    if (!rel.length) c.appendChild(el('div', 'muted', snapMode() ? 'Not in the snapshot.' : 'No 15m market found for this window.'));
     rel.forEach(function (r) { kv(c, 'Slug', r.slug || '—'); kv(c, 'Mid Up', f(r.mid_up, 3)); kv(c, 'Fair Up', f(r.fair_up, 3)); kv(c, 'Gap', sgn(r.gap, 3), cls(r.gap)); });
-    c = card('Session (local only)');
+    c = card(snapMode() ? 'Session (snapshot)' : 'Session (local only)');
     kv(c, 'Bankroll', usd(st.bankroll)); kv(c, 'Realized PnL', usd(st.realized_pnl), cls(st.realized_pnl));
     kv(c, 'Daily PnL', usd(st.daily_pnl), cls(st.daily_pnl)); kv(c, 'Fills', st.fills === null || st.fills === undefined ? '—' : String(st.fills));
     kv(c, 'Windows W / L', (st.windows_won === null || st.windows_won === undefined) ? '—' : st.windows_won + ' / ' + st.windows_lost);
     kv(c, 'Halted', st.halted ? 'yes' + (st.halt_reason ? ' (' + st.halt_reason + ')' : '') : 'no');
-    c.appendChild(el('div', 'tiny muted', st.bankroll === null || st.bankroll === undefined ? 'No local session: PnL, fills and bankroll stay blank.' : 'From the local paper session.'));
+    c.appendChild(el('div', 'tiny muted', st.bankroll === null || st.bankroll === undefined ? 'No local session: PnL, fills and bankroll stay blank.'
+      : snapMode() ? 'From the snapshot of ' + DV.snapLabel(S.snap) + ', not a live session.' : 'From the local paper session.'));
     if (intel && (intel.grade || intel.win_rate !== undefined)) {
       c = card('Strategy intel');
       kv(c, 'Grade', intel.grade || '—'); kv(c, 'Win rate', num(intel.win_rate) === null ? '—' : (100 * intel.win_rate).toFixed(1) + '%');
       kv(c, 'Settled windows', String(intel.windows_settled === undefined ? '—' : intel.windows_settled)); kv(c, 'Max drawdown', usd(intel.max_drawdown));
     }
-    c = card('Why (' + (a.action || 'WATCH') + ' · ' + (a.structure || '—') + ')');
+    c = card(snapMode() ? 'Why (snapshot · last reason)' : 'Why (' + (a.action || 'WATCH') + ' · ' + (a.structure || '—') + ')');
     var ul = el('ul'); (a.reasons || [st.last_reason || 'no reasons']).forEach(function (r) { ul.appendChild(el('li', '', String(r))); }); c.appendChild(ul);
     c = card('Recent ticks (PT)', true);
     var tbl = el('table', 'tbl'), hr = el('tr');
@@ -262,12 +267,11 @@
       if (!r.ok) throw new Error('data.json ' + r.status);
       return r.json();
     }).then(function (snap) {
-      var st = Object.assign({}, snap.state || snap.st || {});
+      var d = DV.snapshotData(snap), st = d.st;  // review-1019 D1a: only blocks from the snapshot itself
       st.mode = 'SNAPSHOT'; st.live_polymarket = false; st.live_armed = false;
       var note = 'SNAPSHOT — not live. Not financial advice. No profit guarantee. This page does not place orders.';
       st.disclaimer = note + (st.disclaimer ? (' ' + st.disclaimer) : '');
-      return { st: st, jr: snap.journal || snap.jr || { events: [] }, an: snap.analysis || snap.an || {}, intel: snap.intel || {},
-               snap: { captured_pt: snap.captured_pt || null } };
+      return d;
     });
   }
   function getJson(url, signal) { return fetch(url, { cache: 'no-store', signal: signal }); }

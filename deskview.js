@@ -58,6 +58,48 @@
     };
   }
 
-  var api = { header: header, ptTitle: ptTitle, isSnapshot: isSnapshot };
+  // review-1019 D1a: data.json carries blocks captured at different times (state + journal at the snapshot,
+  // analysis/intel from a later run). In snapshot mode only blocks from the snapshot itself are used: a block
+  // stamped after the snapshot's last tick, or for another window, is dropped. When the analysis block is
+  // dropped, an analysis is built from the snapshot state alone (fields it lacks stay blank -> '—').
+  // There is no countdown: the time left is the snapshot's own value, labelled as such.
+  function blockTs(b) { return b ? num(b.ts_ms) : null; }
+  function fromSnapshot(b, st, needSlug) {
+    if (!b || typeof b !== 'object') return false;
+    var cut = num(st.last_tick_ms), t = blockTs(b);
+    if (cut !== null && t !== null && t > cut + 1000) return false;      // captured after the snapshot
+    if (needSlug && b.slug && st.slug && b.slug !== st.slug) return false;  // another market window
+    return true;
+  }
+  function snapshotData(snap) {
+    snap = snap || {};
+    var st = Object.assign({}, snap.state || snap.st || {}), raw = snap.analysis || snap.an || {};
+    var a = raw.analysis || null, w = st.window || {}, dropped = [];
+    if (!fromSnapshot(a, st, true)) {
+      if (a) dropped.push('analysis ' + (a.ts_pt || a.slug || ''));
+      a = { slug: st.slug, mid_up: st.mid_up, mid_down: st.mid_down, fair_up: st.fair_up, fair_down: st.fair_down,
+            edge_up: st.edge_up, edge_down: st.edge_down, reasons: st.last_reason ? [st.last_reason] : [], related_markets: [] };
+    }
+    var e = num(w.end_ms), lt = num(st.last_tick_ms);
+    a = Object.assign({}, a);
+    a.snapshot_time_left_sec = (e !== null && lt !== null) ? Math.max(0, (e - lt) / 1000) : null;
+    delete a.window_end_ms; delete a.time_remaining_sec;               // never a live countdown in snapshot mode
+    if (st.analysis && !fromSnapshot(st.analysis, st, true)) { dropped.push('state.analysis ' + (st.analysis.ts_pt || '')); }
+    delete st.analysis;
+    var intel = snap.intel || raw.intel || st.intel || null;
+    if (intel && !fromSnapshot(intel, st, false)) { dropped.push('intel ' + (intel.ts_pt || '')); intel = null; }
+    if (st.intel && !fromSnapshot(st.intel, st, false)) delete st.intel;
+    if (st.meta && typeof st.meta === 'object') {                     // state.meta nests the same later blocks
+      st.meta = Object.assign({}, st.meta);
+      if (st.meta.analysis && !fromSnapshot(st.meta.analysis, st, true)) delete st.meta.analysis;
+      if (st.meta.intel && !fromSnapshot(st.meta.intel, st, false)) delete st.meta.intel;
+    }
+    return { st: st, an: { analysis: a }, intel: intel || {}, jr: snap.journal || snap.jr || { events: [] },
+             snap: { captured_pt: snap.captured_pt || st.last_tick_pt || null, dropped: dropped } };
+  }
+  // short PT capture label for snapshot captions: "2026-09-09 23:29:30 PT"
+  function snapLabel(snap) { var c = snap && snap.captured_pt; return c ? String(c).replace(/ P[DS]T$/, '') + ' PT' : 'unknown time'; }
+
+  var api = { header: header, ptTitle: ptTitle, isSnapshot: isSnapshot, snapshotData: snapshotData, snapLabel: snapLabel };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.DeskView = api;
 })(typeof window !== 'undefined' ? window : this);
