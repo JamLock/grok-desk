@@ -119,6 +119,7 @@
     box.appendChild(wlItem('BTCUSDT', 'Bitcoin spot · ' + (snapMode() ? 'snapshot' : 'Binance'), t ? f(t.last, 2) : f(st.last_price, 2),
       t ? sgn(t.change_pct, 2) + '% 24h' : '—', t ? cls(t.change_pct) : 'muted', false, null));  // 'snapshot' once, in the name
     var cu = midChange('up', st.mid_up), cd = midChange('down', st.mid_down);
+    if (snapMode()) { cu = null; cd = null; }  // review-1019 D1a: a frozen snapshot has no 'since load' change
     box.appendChild(wlItem('BTC Up · 5m', 'Polymarket · ' + (st.slug || '—'), f(st.mid_up, 3), cu === null ? '—' : sgn(cu, 3) + ' since load', cls(cu), S.side === 'up', function () { S.side = 'up'; paintAll(); }));
     box.appendChild(wlItem('BTC Down · 5m', 'Polymarket · same window', f(st.mid_down, 3), cd === null ? '—' : sgn(cd, 3) + ' since load', cls(cd), S.side === 'down', function () { S.side = 'down'; paintAll(); }));
     (a.related_markets || []).forEach(function (r) {
