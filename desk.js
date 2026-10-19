@@ -289,11 +289,23 @@
       }, function (e) { clearTimeout(timer); throw e; })
       .then(function (v) { if (!v[0] || v[0].error) throw new Error((v[0] && v[0].error) || 'empty state'); return { st: v[0], jr: v[1], an: v[2], intel: v[3] }; });
   }
-  function use(d, label) { S.st = d.st; S.jr = d.jr; S.an = d.an; S.intel = d.intel; S.snap = d.snap || null; S.source = label; paintAll(); stamp(); tagLive(); }
+  function use(d, label) { S.noData = false; S.st = d.st; S.jr = d.jr; S.an = d.an; S.intel = d.intel; S.snap = d.snap || null; S.source = label; paintAll(); stamp(); tagLive(); }
   // read-only status strip in the slot Webull uses for Trade (spec §6.1)
   // D1: in snapshot mode the strip shows "snapshot <its capture time>", never the current time
   // N1: before any source has answered the strip shows a dash, never the current time
   function stamp() { setText('asOf', S.st ? DV.header(S.st, S.t24, S.source, S.snap).asOf : '—'); }
+  // review-1019b: every source failed (local /api, live public feeds AND data.json): a clear 'no data'
+  // state instead of 'loading…'. Retried on the normal 8 s refresh; the first source that answers clears it.
+  function noData() {
+    if (S.st) return;  // keep the last good data on screen; its badge/strip already say what it is
+    S.noData = true; S.source = 'NO DATA';
+    var b = $('srcBadge'); b.textContent = 'NO DATA'; b.className = 'badge nodata';
+    var msg = 'No data: the local API, the live public feeds and the data.json snapshot all failed. Retrying every 8 s.';
+    setText('qSub', msg); setText('asOf', '—'); setText('clock', '—');
+    var an = $('an'); an.textContent = ''; an.appendChild(el('div', 'empty nodata', msg));
+    var wl = $('wlList'); wl.textContent = ''; wl.appendChild(el('div', 'empty nodata', 'No data'));
+    setText('disclaimer', 'No data. Not financial advice. No profit guarantee. This page does not place orders.');
+  }
   var inFlight = null;
   function refresh() {
     if (inFlight) return inFlight;  // N1: a slow round never piles up overlapping refreshes
@@ -308,9 +320,9 @@
     }).catch(function () {
       return loadSnapshot().then(function (d) { use(d, 'SNAPSHOT (not live)'); });
     }).catch(function () {
-      setText('disclaimer', 'API unreachable and public feeds failed. Not financial advice. No profit guarantee. This page does not place orders.');
+      noData();
     });
-    return Promise.all([t24, data]).then(function () { if (S.st) paintHeader(); paintWatchlist(); });
+    return Promise.all([t24, data]).then(function () { if (S.st) { paintHeader(); paintWatchlist(); } });
   }
 
   Array.prototype.forEach.call(document.querySelectorAll('#tf button'), function (b) {
@@ -347,7 +359,11 @@
     });
   });
   if (window.matchMedia && window.matchMedia('(max-width: 767px)').matches) $('qdet').removeAttribute('open');
-  function tick() { setText('clock', PTF.clock.format(new Date()) + ' PT'); setText('qLeft', mmss(timeLeft())); }
+  // review-1019b: the header clock (shown >= 1280 px) never shows 'now' in snapshot mode or with no data
+  function tick() {
+    setText('clock', snapMode() ? 'snapshot ' + DV.snapLabel(S.snap) : S.noData ? '—' : PTF.clock.format(new Date()) + ' PT');
+    setText('qLeft', mmss(timeLeft()));
+  }
   tick(); setInterval(tick, 1000);
   var rb = $('refreshBtn'); if (rb) rb.addEventListener('click', function () { refresh(); loadChart(false); loadTrades(); });
   refresh().then(function () { return loadChart(true); });

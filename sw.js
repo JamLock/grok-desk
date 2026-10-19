@@ -1,6 +1,9 @@
 /* Grok Desk shell. Network-first so the public page stays on the latest HTML. No trading keys. */
 const BASE = new URL("./", self.location).pathname;
-const CACHE = "grok-desk-shell-v7";
+// review-1019b: the origin (jamlock.github.io) is shared with other pages; only caches with OUR prefix
+// are ever deleted, never another app's.
+const PREFIX = "grok-desk-shell-";
+const CACHE = PREFIX + "v8";
 const SHELL = [
   "",
   "index.html",
@@ -25,7 +28,7 @@ self.addEventListener("install", function (event) {
 });
 self.addEventListener("activate", function (event) {
   event.waitUntil(caches.keys().then(function (keys) {
-    return Promise.all(keys.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); }));
+    return Promise.all(keys.filter(function (k) { return k.indexOf(PREFIX) === 0 && k !== CACHE; }).map(function (k) { return caches.delete(k); }));
   }).then(function () { return self.clients.claim(); }));
 });
 self.addEventListener("fetch", function (event) {

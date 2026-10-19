@@ -51,7 +51,7 @@ button{font:inherit;color:inherit}
 .drawer-btn{display:none;align-items:center;justify-content:center;width:44px;height:44px;margin:-6px 0 -6px -8px;border:0;background:none;color:var(--text-1);cursor:pointer}
 .drawer-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8}
 .badge{font-size:11px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(48,136,248,.2);color:var(--accent);white-space:nowrap}
-.badge.snap{background:rgba(227,179,65,.18);color:var(--warn)}.badge.local{background:rgba(88,208,168,.18);color:var(--up)}
+.badge.snap{background:rgba(227,179,65,.18);color:var(--warn)}.badge.nodata{background:rgba(240,48,104,.18);color:var(--down-text)}.badge.local{background:rgba(88,208,168,.18);color:var(--up)}
 .qrow{display:flex;align-items:flex-start;gap:24px;margin-top:4px}
 .qprice{white-space:nowrap;min-width:200px}
 .qprice b{font-size:22px;font-weight:700;line-height:1.1}.qprice .chg{font-size:13px;font-weight:600;margin-left:8px}
@@ -172,3 +172,5 @@ footer{padding:10px 14px calc(14px + env(safe-area-inset-bottom));font-size:11px
 /* LOW (1018c): Chart / Analysis tabs are 44 px touch targets at 1024–1366 (and below); the tab row grows to 45 px (1 px divider) */
 @media (max-width:1366px){:root{--tabs:45px}.tabs a{min-height:44px;min-width:44px;justify-content:center}}
 @media (min-width:1024px) and (max-width:1366px){.qtop .refresh{margin:-8px 0 -16px;border-color:transparent;color:var(--accent)}} /* 44 px hit area inside the fixed-height header without growing its row */
+/* review-1019b: every source failed */
+.empty.nodata{color:var(--down-text);font-weight:600}
