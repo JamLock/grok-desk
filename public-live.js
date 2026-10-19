@@ -17,10 +17,27 @@
   function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
   function clampProb(p) { return clamp(p, MIN_P, MAX_P); }
 
+  // N1 (redesign-1018c): every fetch has a hard timeout (AbortController), so a hanging Gamma / CLOB /
+  // Binance request can never leave the page stuck on 'loading…'. The caller falls back to the snapshot.
+  var FETCH_TIMEOUT_MS = 9000;   // per request
+  var LIVE_DEADLINE_MS = 10000;  // whole fetchLivePublic() call
+  function ms(name, dflt) { var v = Number(global[name]); return v > 0 ? v : dflt; }  // test hook (node test shortens it)
+  function timedFetch(url, opts) {
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null, limit = ms('DESK_FETCH_TIMEOUT_MS', FETCH_TIMEOUT_MS), timer;
+    var o = Object.assign({}, opts || {}); if (ctrl) o.signal = ctrl.signal;
+    var hard = new Promise(function (_, rej) {
+      timer = setTimeout(function () { if (ctrl) ctrl.abort(); rej(new Error('timeout after ' + limit + ' ms: ' + url)); }, limit);
+    });
+    return Promise.race([fetch(url, o), hard]).then(function (r) { clearTimeout(timer); return r; }, function (e) { clearTimeout(timer); throw e; });
+  }
+  function withDeadline(p, limit, what) {
+    var timer, hard = new Promise(function (_, rej) { timer = setTimeout(function () { rej(new Error(what + ' timed out after ' + limit + ' ms')); }, limit); });
+    return Promise.race([p, hard]).then(function (v) { clearTimeout(timer); return v; }, function (e) { clearTimeout(timer); throw e; });
+  }
   function fetchJson(url) {
-    return fetch(url, { headers: { Accept: 'application/json' }, mode: 'cors', cache: 'no-store' }).then(function (r) {
+    return timedFetch(url, { headers: { Accept: 'application/json' }, mode: 'cors', cache: 'no-store' }).then(function (r) {
       if (!r.ok) throw new Error(url + ' → ' + r.status);
-      return r.json();
+      return withDeadline(r.json(), ms('DESK_FETCH_TIMEOUT_MS', FETCH_TIMEOUT_MS), 'body of ' + url);  // a trickling body is bounded too
     });
   }
 
@@ -234,6 +251,9 @@
   }
 
   function fetchLivePublic() {
+    return withDeadline(fetchLivePublicInner(), ms('DESK_LIVE_DEADLINE_MS', LIVE_DEADLINE_MS), 'live public fetch');
+  }
+  function fetchLivePublicInner() {
     var now = Date.now();
     var nowS = Math.floor(now / 1000);
     var w5 = windowTs(WINDOW_5, nowS);
@@ -389,5 +409,6 @@
   }
 
   global.fetchLivePublic = fetchLivePublic;
-  global.DeskFeeds = { candles: fetchCandles, trades: fetchTrades, tickSides: tickSides, ticker24h: fetchTicker24h, hosts: BINANCE_HOSTS.slice() };
+  global.DeskFeeds = { candles: fetchCandles, trades: fetchTrades, tickSides: tickSides, ticker24h: fetchTicker24h, hosts: BINANCE_HOSTS.slice(),
+                       timedFetch: timedFetch, withDeadline: withDeadline };
 })(typeof globalThis !== 'undefined' ? globalThis : window);

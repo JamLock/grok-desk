@@ -61,14 +61,38 @@
     var w = (S.st && S.st.window) || {};
     if (openLine) { candles.removePriceLine(openLine); openLine = null; }
     if (!snapMode() && num(w.open_btc) !== null) openLine = candles.createPriceLine({ price: num(w.open_btc), color: '#3088f8', lineWidth: 1, lineStyle: LC.LineStyle.Dotted, axisLabelVisible: true, title: '5m open' });
-    setText('chartTag', 'BTCUSDT · Binance spot (live) · ' + S.tf + ' · ' + cs.length + ' bars · times PT' + (snapMode() ? ' · 5m open line hidden (snapshot mode)' : ''));
+    S.bars = cs.length; S.hiLo = [hi ? f(hi.high, 2) : '', lo ? f(lo.low, 2) : ''];
+    tagLive();
   }
+  // LOW (1018c): chart and Time & Sales are always LIVE Binance data. In snapshot mode they say so
+  // plainly ("LIVE, not the snapshot"); the snapshot-only rule (D1, deskview.js) covers the header.
+  function tagLive() {
+    if (S.bars !== undefined) setText('chartTag', (snapMode() ? 'LIVE Binance BTCUSDT · not the snapshot · ' : 'BTCUSDT · Binance spot (live) · ') + S.tf + ' · ' + S.bars + ' bars · times PT');
+    if (S.tsOk) setText('tsSrc', snapMode() ? 'LIVE Binance trades · not the snapshot' : 'BTCUSDT · tick vs prev');
+  }
+  // D5 (1018c): pad the visible range in PIXELS, not bars, so the high/low label of an edge bar fits in
+  // full at any chart width. The label is centred on its bar, so each side needs half the widest label
+  // (measured with the chart's own font) plus a margin; convert pixels to logical bars for this width.
+  var LBL_FONT = '11px -apple-system, BlinkMacSystemFont, \'Trebuchet MS\', Roboto, Ubuntu, sans-serif';  // LWC default family, layout fontSize 11
+  var measure = document.createElement('canvas').getContext('2d');
+  function labelPadPx() {
+    measure.font = LBL_FONT;
+    var w = 0; (S.hiLo || []).forEach(function (t) { w = Math.max(w, measure.measureText(t || '00000.00').width); });
+    return Math.ceil(w / 2) + 14;
+  }
+  function fitPadded() {
+    var n = S.bars || 0, W = chart.timeScale().width();
+    if (!n || !(W > 0)) return;
+    var P = Math.min(labelPadPx(), W / 3), span = Math.max(n - 1, 1);
+    var a = P * span / Math.max(W - 2 * P, 1) + 0.5;  // logical bars of padding each side (+half a bar: range edges are bar centres)
+    chart.timeScale().setVisibleLogicalRange({ from: -a, to: n - 1 + a });
+  }
+  chart.timeScale().subscribeSizeChange(function () { if (S.autoFit) fitPadded(); });
   function loadChart(fit) {
     if (!FEEDS) return Promise.resolve();
     return FEEDS.candles(S.tf).then(function (cs) {
       drawChart(cs);
-      // D5: pad the visible range (~half a label each side) so a high/low label on an edge bar is not clipped
-      if (fit && cs.length) chart.timeScale().setVisibleLogicalRange({ from: -6, to: cs.length + 5 });
+      if (fit && cs.length) { S.autoFit = true; fitPadded(); }
     })
       .catch(function (e) { setText('chartTag', 'BTC chart unavailable (' + e.message + ')'); });
   }
@@ -92,7 +116,7 @@
     box.textContent = '';
     if (snapMode()) t = null;  // never mix the live 24h ticker into snapshot mode
     box.appendChild(wlItem('BTCUSDT', 'Bitcoin spot · ' + (snapMode() ? 'snapshot' : 'Binance'), t ? f(t.last, 2) : f(st.last_price, 2),
-      t ? sgn(t.change_pct, 2) + '% 24h' : (snapMode() ? 'snapshot' : '—'), t ? cls(t.change_pct) : 'muted', false, null));
+      t ? sgn(t.change_pct, 2) + '% 24h' : '—', t ? cls(t.change_pct) : 'muted', false, null));  // 'snapshot' once, in the name
     var cu = midChange('up', st.mid_up), cd = midChange('down', st.mid_down);
     box.appendChild(wlItem('BTC Up · 5m', 'Polymarket · ' + (st.slug || '—'), f(st.mid_up, 3), cu === null ? '—' : sgn(cu, 3) + ' since load', cls(cu), S.side === 'up', function () { S.side = 'up'; paintAll(); }));
     box.appendChild(wlItem('BTC Down · 5m', 'Polymarket · same window', f(st.mid_down, 3), cd === null ? '—' : sgn(cd, 3) + ' since load', cls(cd), S.side === 'down', function () { S.side = 'down'; paintAll(); }));
@@ -169,8 +193,8 @@
       });
       if (ts.length) S.lastTrade = ts[0].ts_ms;
       stamp();
-      setText('tsSrc', 'BTCUSDT · tick vs prev');
-    }).catch(function (e) { setText('tsSrc', 'trades unavailable (' + e.message + ')'); });
+      S.tsOk = true; tagLive();
+    }).catch(function (e) { S.tsOk = false; setText('tsSrc', 'trades unavailable (' + e.message + ')'); });
   }
 
   // ---------------------------------------------------------------- analysis panels (below)
@@ -233,7 +257,8 @@
   // ---------------------------------------------------------------- data sources (unchanged order)
   function loadSnapshot() {
     var base = location.pathname.replace(/[^/]*$/, '');
-    return fetch(base + 'data.json', { cache: 'no-store' }).then(function (r) {
+    var get = FEEDS && FEEDS.timedFetch ? FEEDS.timedFetch : fetch;  // N1: bounded like every other fetch
+    return get(base + 'data.json', { cache: 'no-store' }).then(function (r) {
       if (!r.ok) throw new Error('data.json ' + r.status);
       return r.json();
     }).then(function (snap) {
@@ -257,11 +282,18 @@
       }, function (e) { clearTimeout(timer); throw e; })
       .then(function (v) { if (!v[0] || v[0].error) throw new Error((v[0] && v[0].error) || 'empty state'); return { st: v[0], jr: v[1], an: v[2], intel: v[3] }; });
   }
-  function use(d, label) { S.st = d.st; S.jr = d.jr; S.an = d.an; S.intel = d.intel; S.snap = d.snap || null; S.source = label; paintAll(); stamp(); }
+  function use(d, label) { S.st = d.st; S.jr = d.jr; S.an = d.an; S.intel = d.intel; S.snap = d.snap || null; S.source = label; paintAll(); stamp(); tagLive(); }
   // read-only status strip in the slot Webull uses for Trade (spec §6.1)
   // D1: in snapshot mode the strip shows "snapshot <its capture time>", never the current time
-  function stamp() { setText('asOf', S.st ? DV.header(S.st, S.t24, S.source, S.snap).asOf : PTF.clock.format(new Date())); }
+  // N1: before any source has answered the strip shows a dash, never the current time
+  function stamp() { setText('asOf', S.st ? DV.header(S.st, S.t24, S.source, S.snap).asOf : '—'); }
+  var inFlight = null;
   function refresh() {
+    if (inFlight) return inFlight;  // N1: a slow round never piles up overlapping refreshes
+    inFlight = refreshOnce().then(function () { inFlight = null; }, function () { inFlight = null; });
+    return inFlight;
+  }
+  function refreshOnce() {
     var t24 = FEEDS ? FEEDS.ticker24h().then(function (t) { S.t24 = t; }).catch(function () { S.t24 = null; }) : Promise.resolve();
     var data = loadLocal().then(function (d) { use(d, 'local /api'); }).catch(function () {
       if (typeof window.fetchLivePublic !== 'function') throw new Error('live fetch missing');
