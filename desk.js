@@ -1,5 +1,5 @@
 /* Grok Desk page script (index.html, dashboard.html, app.html). Read-only: no order UI, no keys.
-   Source order: local /api/state (serve.py) -> LIVE PUBLIC (Polymarket Gamma + CLOB book, Binance BTC)
+   Source order: local /api/state (serve.py; plain http only, never tried on *.github.io) -> LIVE PUBLIC (Polymarket Gamma + CLOB book, Binance BTC)
    -> data.json snapshot. Chart, ticker and trades are BTC spot from Binance public market data.
    All rendering via textContent / CSSOM (CSP: script-src 'self', style-src 'self'). Times in PT. */
 (function () {
@@ -60,7 +60,9 @@
     candles.setMarkers(mk);
     var w = (S.st && S.st.window) || {};
     if (openLine) { candles.removePriceLine(openLine); openLine = null; }
-    if (!snapMode() && num(w.open_btc) !== null) openLine = candles.createPriceLine({ price: num(w.open_btc), color: '#3088f8', lineWidth: 1, lineStyle: LC.LineStyle.Dotted, axisLabelVisible: true, title: '5m open' });
+    // review-1026: no left-axis label for the 5m open (at 1024x768 it was pushed off its level by the
+    // last-price label and half-covered a tick); the open price stays in the header quote (5m open) and the legend names the dotted blue line.
+    if (!snapMode() && num(w.open_btc) !== null) openLine = candles.createPriceLine({ price: num(w.open_btc), color: '#3088f8', lineWidth: 1, lineStyle: LC.LineStyle.Dotted, axisLabelVisible: false, title: '5m open' });
     S.bars = cs.length; S.hiLo = [hi ? f(hi.high, 2) : '', lo ? f(lo.low, 2) : ''];
     tagLive();
   }
@@ -278,7 +280,13 @@
     });
   }
   function getJson(url, signal) { return fetch(url, { cache: 'no-store', signal: signal }); }
+  // review-1026: the local /api only exists where the local serve.py serves the page, i.e. plain http on a
+  // host that is not *.github.io. GitHub Pages (https, *.github.io) and any other https host never have it,
+  // so the root-absolute /api/* probe is skipped there (it cost 4 failed requests every 8 s per open tab and
+  // would read any sibling 'api' page on the shared origin). Fails safe: anything unexpected = skip.
+  var LOCAL_API = location.protocol === 'http:' && !/(^|\.)github\.io\.?$/i.test(location.hostname);
   function loadLocal() {
+    if (!LOCAL_API) return Promise.reject(new Error('no local api on this host'));
     var ctrl = new AbortController(), timer = setTimeout(function () { ctrl.abort(); }, 2500);
     var soft = function (p) { return p.catch(function () { return { ok: false }; }); };
     return Promise.all([getJson('/api/state', ctrl.signal), getJson('/api/journal', ctrl.signal), soft(getJson('/api/analysis', ctrl.signal)), soft(getJson('/api/intel', ctrl.signal))])
@@ -300,7 +308,7 @@
     if (S.st) return;  // keep the last good data on screen; its badge/strip already say what it is
     S.noData = true; S.source = 'NO DATA';
     var b = $('srcBadge'); b.textContent = 'NO DATA'; b.className = 'badge nodata';
-    var msg = 'No data: the local API, the live public feeds and the data.json snapshot all failed. Retrying every 8 s.';
+    var msg = (LOCAL_API ? 'No data: the local API, the live public feeds and the data.json snapshot all failed.' : 'No data: the live public feeds and the data.json snapshot both failed.') + ' Retrying every 8 s.';
     setText('qSub', msg); setText('asOf', '—'); setText('clock', '—'); stripNoData(true);
     var an = $('an'); an.textContent = ''; an.appendChild(el('div', 'empty nodata', msg));
     var wl = $('wlList'); wl.textContent = ''; wl.appendChild(el('div', 'empty nodata', 'No data'));

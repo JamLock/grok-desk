@@ -23,7 +23,7 @@ Timeouts: every public fetch gives up after 9 s and a whole refresh after 10 s; 
 
 Fair vs mid reuses the training distance-to-open model (BTC vs the window open, time left, short-term vol and momentum). It is not a quote and not an order.
 
-PnL, fills, and bankroll stay blank (`—` / no local session) unless a local `serve.py` answers `/api/state`. `data.json` is only a last-resort snapshot if those public feeds fail.
+PnL, fills, and bankroll stay blank (`—` / no local session) unless a local `serve.py` answers `/api/state`. On `*.github.io` (and any `https` host) the page does not try `/api/*` at all; only a plain-`http` page that is not on `github.io` tries it (2.5 s limit) before going LIVE PUBLIC. `data.json` is only a last-resort snapshot if those public feeds fail.
 
 ## Notes for editors
 

@@ -3,7 +3,7 @@ const BASE = new URL("./", self.location).pathname;
 // review-1019b: the origin (jamlock.github.io) is shared with other pages; only caches with OUR prefix
 // are ever deleted, never another app's.
 const PREFIX = "grok-desk-shell-";
-const CACHE = PREFIX + "v8";
+const CACHE = PREFIX + "v9";
 const SHELL = [
   "",
   "index.html",

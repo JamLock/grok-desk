@@ -1,4 +1,4 @@
-/* Grok Desk — Webull-style, read-only. Spec: /workspace/redesign-1018/spec.md (tokens, widths, breakpoints).
+/* Grok Desk — Webull-style, read-only. Tokens, widths and breakpoints follow the 2026-10-18 redesign spec.
    No inline styles (CSP style-src 'self'); system fonts only; no web fonts or CDNs. */
 :root{
   --bg-app:#0a0d20;--bg-panel:#0f1629;--bg-chart:#19223f;--bg-row-selected:#171e31;--divider:#0e1122;--line:#1a2238;
